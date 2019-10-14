@@ -4,9 +4,9 @@ from msrest.authentication import BasicAuthentication
 
 class Project:
 
-    def __init__(self, organisation, project, personalAccessToken):
+    def __init__(self, organisation, projectName, personalAccessToken):
         self.org = organisation
-        self.proj = project
+        self.pn = projectName
         self.pat = personalAccessToken
 
         organization_url = 'https://dev.azure.com/' + self.org
@@ -23,7 +23,11 @@ class Project:
         index = 0
         while get_projects_response is not None:
             for project in get_projects_response.value:
-                print("[" + str(index) + "] " + project.name)
+                if (project.name == self.pn):
+                    self.project = project
+                    # Stop grabbing stuff
+                    get_projects_response.continuation_token = None
+                    break
                 index += 1
             if get_projects_response.continuation_token is not None and get_projects_response.continuation_token != "":
                 # Get the next page of projects
