@@ -2,12 +2,11 @@ import requests
 from azure.devops.connection import Connection
 from msrest.authentication import BasicAuthentication
 
-class ADORepoStats:
+class Project:
 
-    def __init__(self, organisation, project, repository="", personalAccessToken):
+    def __init__(self, organisation, project, personalAccessToken):
         self.org = organisation
         self.proj = project
-        self.repo = repository
         self.pat = personalAccessToken
 
     def getProject(self):
