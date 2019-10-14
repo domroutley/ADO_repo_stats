@@ -35,3 +35,6 @@ class Project:
             else:
                 # All projects have been retrieved
                 get_projects_response = None
+
+    def getRepositories(self):
+        pass
