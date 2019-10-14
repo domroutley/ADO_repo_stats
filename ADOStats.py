@@ -9,8 +9,6 @@ class Project:
         self.proj = project
         self.pat = personalAccessToken
 
-    def getProject(self):
-
         organization_url = 'https://dev.azure.com/' + self.org
 
         # Create a connection to the org
@@ -25,7 +23,7 @@ class Project:
         index = 0
         while get_projects_response is not None:
             for project in get_projects_response.value:
-                pprint.pprint("[" + str(index) + "] " + project.name)
+                print("[" + str(index) + "] " + project.name)
                 index += 1
             if get_projects_response.continuation_token is not None and get_projects_response.continuation_token != "":
                 # Get the next page of projects
