@@ -10,7 +10,9 @@ Stop:`deactivate`*
 ## To run
 - Clone repo `git clone https://github.com/domroutley/ADO_repo_stats.git`
 - Install required packages with `pip install -r requirements.txt`
--
+- Using either a python script, or in the interpreter...
+  - Import the Project class (`from ADOStats import Project`)
+  - Initialise the project (`myProject = Project([ORGANISATION],[PROJECT],[PERSONAL_ACCESS_TOKEN])`)
 
 
 ## Requirements
