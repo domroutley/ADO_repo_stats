@@ -21,5 +21,5 @@ printAmount(len(defs), "Build definitions", test)
 
 rels = test.getReleases()
 printAmount(len(rels), "Releases", test)
-# for defi in defs:
-#     print("Build definition: " + defi.name)
+rels = test.getReleaseDefinitions()
+printAmount(len(rels), "Release definitions", test)

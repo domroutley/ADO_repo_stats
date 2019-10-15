@@ -44,7 +44,6 @@ class Project:
         gitClient = self.connection.clients.get_git_client()
         repos = gitClient.get_repositories(self.project.name)
         return repos
-        pass
 
     # Returns a list of build definition objects
     def getDefinitions(self):
@@ -60,20 +59,31 @@ class Project:
             listOfDefinitions.extend(definitions.value)
 
         return listOfDefinitions
-        pass
 
-    # Returns a list of release object
+    # Returns a list of release objects
     def getReleases(self):
+        return self.releases("releases")
+
+    # Returns a list of release objects
+    def getReleaseDefinitions(self):
+        return self.releases("definitions")
+
+    def releases(self, mode):
         from azure.devops.released.release import ReleaseClient
 
         releaseClient = self.connection.clients.get_release_client()
-        releases = releaseClient.get_releases(self.project.name)
-        listOfReleases = releases.value
+        if mode == "definitions":
+            releases = releaseClient.get_release_definitions(self.project.name)
+        elif mode == "releases":
+            releases = releaseClient.get_releases(self.project.name)
+        list = releases.value
 
         # While there is more to get, get them and extend the current list
         while releases.continuation_token is not None:
-            releases = releaseClient.get_releases(self.project.name, continuation_token=releases.continuation_token)
-            listOfReleases.extend(releases.value)
+            if mode == "definitions":
+                releases = releaseClient.get_release_definitions(self.project.name, continuation_token=releases.continuation_token)
+            elif mode == "releases":
+                releases = releaseClient.get_releases(self.project.name, continuation_token=releases.continuation_token)
+            list.extend(releases.value)
 
-        return listOfReleases
-        pass
+        return list
