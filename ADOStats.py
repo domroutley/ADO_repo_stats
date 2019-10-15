@@ -9,32 +9,32 @@ class Project:
         self.pn = projectName
         self.pat = personalAccessToken
 
-        organization_url = 'https://dev.azure.com/' + self.org
+        organizationUrl = 'https://dev.azure.com/' + self.org
 
         # Create a connection to the org
         credentials = BasicAuthentication('', self.pat)
-        connection = Connection(base_url=organization_url, creds=credentials)
+        connection = Connection(base_url=organizationUrl, creds=credentials)
 
         # Get a client (the "core" client provides access to projects, teams, etc)
-        core_client = connection.clients.get_core_client()
+        coreClient = connection.clients.get_core_client()
 
         # Get the first page of projects
-        get_projects_response = core_client.get_projects()
+        getProjectsResponse = coreClient.get_projects()
         index = 0
-        while get_projects_response is not None:
-            for project in get_projects_response.value:
+        while getProjectsResponse is not None:
+            for project in getProjectsResponse.value:
                 if (project.name == self.pn):
                     self.project = project
                     # Stop grabbing stuff
-                    get_projects_response.continuation_token = None
+                    getProjectsResponse.continuation_token = None
                     break
                 index += 1
-            if get_projects_response.continuation_token is not None and get_projects_response.continuation_token != "":
+            if getProjectsResponse.continuation_token is not None and getProjectsResponse.continuation_token != "":
                 # Get the next page of projects
-                get_projects_response = core_client.get_projects(continuation_token=get_projects_response.continuation_token)
+                getProjectsResponse = coreClient.get_projects(continuation_token=getProjectsResponse.continuation_token)
             else:
                 # All projects have been retrieved
-                get_projects_response = None
+                getProjectsResponse = None
 
     def getRepositories(self):
         pass
