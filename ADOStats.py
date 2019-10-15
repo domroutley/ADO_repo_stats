@@ -99,10 +99,3 @@ class Project:
             list.extend(releases.value)
 
         return list
-
-    def getTestStatistics(self):
-        from azure.devops.released.test import TestClient
-
-        testClient = self.connection.clients.get_test_client()
-        tests = testClient.get_test_run_statistics(self.project.name)
-        return tests
