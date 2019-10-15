@@ -1,4 +1,4 @@
-repositories# Azure DevOps repository statistics python module
+# Azure DevOps repository statistics python module
 
 *It is strongly suggested that you use a virtual python environment.  
 Install:`python3 -m venv .venv`  
