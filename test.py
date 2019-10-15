@@ -3,7 +3,13 @@ f = open('token', 'r')
 pat = f.read()
 pat = pat[:-1] # Strip newline from end of token
 test = Project('dominicroutley', 'learningTest', pat)
-print(test.project.name)
+print("Project: " + test.project.name)
 
 
-test.getRepositories()
+repos = test.getRepositories()
+for repo in repos:
+    print("Repository      : " + repo.name)
+
+defs = test.getDefinitions()
+for defi in defs:
+    print("Build definition: " + defi.name)

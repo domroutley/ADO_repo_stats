@@ -45,3 +45,19 @@ class Project:
         repos = gitClient.get_repositories(self.project.name)
         return repos
         pass
+
+    # Returns a list of build definition objects
+    def getDefinitions(self):
+        from azure.devops.released.build import BuildClient
+
+        buildClient = self.connection.clients.get_build_client()
+        definitions = buildClient.get_definitions(self.project.name)
+        listOfDefinitions = definitions.value
+
+        # While there is more to get, get them and extend the current list
+        while definitions.continuation_token is not None:
+            definitions = buildClient.get_definitions(self.project.name, continuation_token=definitions.continuation_token)
+            listOfDefinitions.extend(definitions.value)
+
+        return listOfDefinitions
+        pass
