@@ -1,4 +1,3 @@
-import requests
 from azure.devops.connection import Connection
 from msrest.authentication import BasicAuthentication
 
