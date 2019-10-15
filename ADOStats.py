@@ -61,3 +61,19 @@ class Project:
 
         return listOfDefinitions
         pass
+
+    # Returns a list of release object
+    def getReleases(self):
+        from azure.devops.released.release import ReleaseClient
+
+        releaseClient = self.connection.clients.get_release_client()
+        releases = releaseClient.get_releases(self.project.name)
+        listOfReleases = releases.value
+
+        # While there is more to get, get them and extend the current list
+        while releases.continuation_token is not None:
+            releases = releaseClient.get_releases(self.project.name, continuation_token=releases.continuation_token)
+            listOfReleases.extend(releases.value)
+
+        return listOfReleases
+        pass

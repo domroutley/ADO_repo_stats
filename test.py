@@ -18,3 +18,8 @@ defs = test.getDefinitions()
 printAmount(len(defs), "Build definitions", test)
 # for defi in defs:
 #     print("Build definition: " + defi.name)
+
+rels = test.getReleases()
+printAmount(len(rels), "Releases", test)
+# for defi in defs:
+#     print("Build definition: " + defi.name)
