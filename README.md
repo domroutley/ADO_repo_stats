@@ -17,6 +17,7 @@ Stop:`deactivate`*
     `from ADOStats import Project`
   - Initialise the project  
     `myProject = Project([ORGANISATION],[PROJECT],[PERSONAL_ACCESS_TOKEN])`
+- Alternativly, use the `exampleUsage.py` file to just run the module. You will need to create a `token` file containing only a PAT for ADO, and change the project initialisation call to use your organisation and project names.
 
 
 ## Targets
