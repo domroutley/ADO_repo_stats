@@ -14,7 +14,7 @@ printAmount(len(repos), "Repositories", test)
 # for repo in repos:
 #     print("Repository      : " + repo.name)
 
-defs = test.getDefinitions()
+defs = test.getBuildDefinitions()
 printAmount(len(defs), "Build definitions", test)
 # for defi in defs:
 #     print("Build definition: " + defi.name)

@@ -46,7 +46,7 @@ class Project:
         return repos
 
     # Returns a list of build definition objects
-    def getDefinitions(self):
+    def getBuildDefinitions(self):
         from azure.devops.released.build import BuildClient
 
         buildClient = self.connection.clients.get_build_client()
