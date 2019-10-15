@@ -20,20 +20,45 @@ Stop:`deactivate`*
 
 
 ## Targets
-  `And how to get them`
 - [x] Number of repositories
-  `length(myProject.getRepositories())`
-- [ ] Number of builds
-- [ ] Number of build definitions
-- [ ] Number of of builds per definition
-- [ ] Number of releases
-- [ ] Number of release definition
-- [ ] Number of releases per definition
-- [ ] Successful builds
-- [ ] Successful releases
-- [ ] Failed builds
-- [ ] Failed releases
-- [ ] Cancelled builds
-- [ ] Cancelled releases
-- [ ] Tests passed
-- [ ] Tests failed
+
+
+- [x] Number of builds
+- [x] Number of build definitions
+- [x] Number of builds per definition
+- [x] Number of successful builds per definition
+- [x] Number of failed builds per definition
+- [x] Number of cancelled builds per definition
+
+
+- [x] Number of releases
+- [x] Number of release definitions
+- [x] Number of releases per definition
+- [x] Number of successful releases per definition
+- [x] Number of failed releases per definition
+- [x] Number of cancelled releases per definition
+
+
+- [ ] Number of tests passed
+- [ ] Number of tests failed
+
+## Data structure used in example
+This is the data structure of the dictionary returned by the example `createDict` function
+```
+{
+    definitionA:
+    {
+        total: [int],
+        succeeded: [int],
+        failed: [int],
+        cancelled: [int]
+    },
+    definitionB:
+    {
+        total: [int],
+        succeeded: [int],
+        failed: [int],
+        cancelled: [int]
+    }
+}
+```
