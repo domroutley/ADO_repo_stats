@@ -37,5 +37,11 @@ class Project:
                 # All projects have been retrieved
                 getProjectsResponse = None
 
+    # Returns a list of repository objects
     def getRepositories(self):
+        from azure.devops.released.git import GitClient
+
+        gitClient = self.connection.clients.get_git_client()
+        repos = gitClient.get_repositories(self.project.name)
+        return repos
         pass
