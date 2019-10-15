@@ -1,3 +1,6 @@
+def printAmount(number, what, project):
+    print("There are " + str(number) + " " + what + " in the " + project.project.name + " project.")
+
 from ADOStats import Project
 f = open('token', 'r')
 pat = f.read()
@@ -7,9 +10,11 @@ print("Project: " + test.project.name)
 
 
 repos = test.getRepositories()
-for repo in repos:
-    print("Repository      : " + repo.name)
+printAmount(len(repos), "Repositories", test)
+# for repo in repos:
+#     print("Repository      : " + repo.name)
 
 defs = test.getDefinitions()
-for defi in defs:
-    print("Build definition: " + defi.name)
+printAmount(len(defs), "Build definitions", test)
+# for defi in defs:
+#     print("Build definition: " + defi.name)
