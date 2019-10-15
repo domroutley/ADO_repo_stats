@@ -11,15 +11,14 @@ print("Project: " + test.project.name)
 
 repos = test.getRepositories()
 printAmount(len(repos), "Repositories", test)
-# for repo in repos:
-#     print("Repository      : " + repo.name)
 
-defs = test.getBuildDefinitions()
-printAmount(len(defs), "Build definitions", test)
-# for defi in defs:
-#     print("Build definition: " + defi.name)
+b = test.getBuilds()
+printAmount(len(b), "Builds", test)
+b = test.getBuildDefinitions()
+printAmount(len(b), "Build definitions", test)
 
-rels = test.getReleases()
-printAmount(len(rels), "Releases", test)
-rels = test.getReleaseDefinitions()
-printAmount(len(rels), "Release definitions", test)
+
+r = test.getReleases()
+printAmount(len(r), "Releases", test)
+r = test.getReleaseDefinitions()
+printAmount(len(r), "Release definitions", test)

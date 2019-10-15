@@ -45,20 +45,33 @@ class Project:
         repos = gitClient.get_repositories(self.project.name)
         return repos
 
+    # Returns a list of build objects
+    def getBuilds(self):
+        return self.builds("builds")
+
     # Returns a list of build definition objects
     def getBuildDefinitions(self):
+        return self.builds("definitions")
+
+    def builds(self, mode):
         from azure.devops.released.build import BuildClient
 
         buildClient = self.connection.clients.get_build_client()
-        definitions = buildClient.get_definitions(self.project.name)
-        listOfDefinitions = definitions.value
+        if mode == "definitions":
+            builds = buildClient.get_definitions(self.project.name)
+        elif mode == "builds":
+            builds = buildClient.get_builds(self.project.name)
+        list = builds.value
 
         # While there is more to get, get them and extend the current list
-        while definitions.continuation_token is not None:
-            definitions = buildClient.get_definitions(self.project.name, continuation_token=definitions.continuation_token)
-            listOfDefinitions.extend(definitions.value)
+        while builds.continuation_token is not None:
+            if mode == "definitions":
+                builds = buildClient.get_definitions(self.project.name, continuation_token=builds.continuation_token)
+            elif mode == "builds":
+                builds = buildClient.get_builds(self.project.name, continuation_token=builds.continuation_token)
+            list.extend(builds.value)
 
-        return listOfDefinitions
+        return list
 
     # Returns a list of release objects
     def getReleases(self):
