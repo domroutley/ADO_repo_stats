@@ -19,8 +19,10 @@ Stop:`deactivate`*
     `myProject = Project([ORGANISATION],[PROJECT],[PERSONAL_ACCESS_TOKEN])`
 
 
-## Requirements
-- [ ] Number of repositories
+## Targets
+  `And how to get them`
+- [x] Number of repositories
+  `length(myProject.getRepositories())`
 - [ ] Number of builds
 - [ ] Number of build definitions
 - [ ] Number of of builds per definition
