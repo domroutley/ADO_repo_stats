@@ -16,24 +16,24 @@ Stop:`deactivate`*
 
 
 ## Targets
-- [x] Number of repositories
+- ~~Number of repositories~~
 
 
-- [x] Number of builds
-- [x] Number of build definitions
-- [x] Number of builds per definition
-- [x] Number of successful builds per definition
-- [x] Number of failed builds per definition
-- [x] Number of cancelled builds per definition
+- ~~Number of builds~~
+- ~~Number of build definitions~~
+- ~~Number of builds per definition~~
+- ~~Number of successful builds per definition~~
+- ~~Number of failed builds per definition~~
+- ~~Number of cancelled builds per definition~~
 
 
-- [x] Number of releases
-- [x] Number of release definitions
-- [x] Number of releases per definition
-- [x] Number of successful releases per definition
-- [x] Number of failed releases per definition
-- [x] Number of cancelled releases per definition
+- ~~Number of releases~~
+- ~~Number of release definitions~~
+- ~~Number of releases per definition~~
+- ~~Number of successful releases per definition~~
+- ~~Number of failed releases per definition~~
+- ~~Number of cancelled releases per definition~~
 
 
-- [ ] Number of tests passed
-- [ ] Number of tests failed
+- Number of tests passed
+- Number of tests failed
