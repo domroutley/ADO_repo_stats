@@ -63,7 +63,7 @@ pat = f.read()
 pat = pat[:-1] # Strip newline from end of token
 
 # Create project
-myProject = Project('dominicroutley', 'learningTest', pat)
+myProject = Project('dominicroutley', 'learningTest', pat) # Change this line to have your own organisation and project name
 print("Project: " + myProject.project.name)
 
 # Get repositories

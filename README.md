@@ -12,12 +12,7 @@ Stop:`deactivate`*
   `git clone https://github.com/domroutley/ADO_repo_stats.git`
 - Install required packages  
   `pip install -r requirements.txt`
-- Using either a python script, or in the interpreter...
-  - Import the Project class  
-    `from ADOStats import Project`
-  - Initialise the project  
-    `myProject = Project([ORGANISATION],[PROJECT],[PERSONAL_ACCESS_TOKEN])`
-- Alternativly, use the `exampleUsage.py` file to just run the module. You will need to create a `token` file containing only a PAT for ADO, and change the project initialisation call to use your organisation and project names.
+- Use the `exampleUsage.py` file to see an example output. You will need to create a `token` file containing only a PAT for ADO (there must be a newline at the end of the token and nothing else in the file), and change the project initialisation call to use your organisation and project names.
 
 
 ## Targets
