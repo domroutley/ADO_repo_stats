@@ -1,6 +1,37 @@
 from ADOStats import Project
 
 def createDict(listOfItems, verbose=False):
+    """
+    Input param: listOfItems
+    Type: <List> of type azure.devops.v5_1.release.models.[Release]
+                         OR
+                         azure.devops.v5_1.build.models.[Build]
+
+    Input param: verbose
+    Type: Boolean
+    Default: False
+    Description: Prints dictionary in readable format if True
+
+    Return value:
+    Type: <Dictionary>
+        Dictionary structure:
+        {
+            definitionA:
+            {
+                total: [int],
+                succeeded: [int],
+                failed: [int],
+                cancelled: [int]
+            },
+            definitionB:
+            {
+                total: [int],
+                succeeded: [int],
+                failed: [int],
+                cancelled: [int]
+            }
+        }
+    """
     dictionary = {}
     for item in listOfItems:
         # If this definition already exists in the dictionary
