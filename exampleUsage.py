@@ -43,17 +43,22 @@ print("Repositories: " + str(len(repos)))
 builds = myProject.getBuilds()
 print("Builds: " + str(len(builds)))
 
+# Get build definitions
 buildDefinitions = myProject.getBuildDefinitions()
 print("Build definitions: " + str(len(buildDefinitions)))
 
+# Get build status per build definition
 buildDict = createDict(builds, True)
 
-print() # gap
+print() # gap in printout
 
+# Get releases
 releases = myProject.getReleases()
 print("Releases: " + str(len(releases)))
 
+# Get release definitions
 releaseDefinitions = myProject.getReleaseDefinitions()
 print("Release definitions: " + str(len(releaseDefinitions)))
 
+# Get release staus per release definition
 releaseDict = createDict(releases, True)
