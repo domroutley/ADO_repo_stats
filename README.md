@@ -12,7 +12,7 @@ Stop:`deactivate`*
   `git clone https://github.com/domroutley/ADO_repo_stats.git`
 - Install required packages  
   `pip install -r requirements.txt`
-- Use the `exampleUsage.py` file to see an example output. You will need to create a `token` file containing only a PAT for ADO (there must be a newline at the end of the token and nothing else in the file), and change the project initialisation call to use your organisation and project names.
+- Run the `exampleUsage.py` file to see an example output. You will need to create a `token` file containing only a PAT for ADO (there must be a newline at the end of the token and nothing else in the file), and change the project initialisation call to use your organisation and project names.
 
 
 ## Targets
