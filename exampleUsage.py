@@ -88,6 +88,8 @@ print("Project: " + myProject.project.name)
 repos = myProject.getRepositories()
 print("Repositories: " + str(len(repos)))
 
+print()
+
 # Get builds
 builds = myProject.getBuilds()
 print("Builds: " + str(len(builds)))
