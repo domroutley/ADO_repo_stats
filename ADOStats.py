@@ -3,8 +3,21 @@ from msrest.authentication import BasicAuthentication
 
 class Project:
 
-    # initilises connection with ADO
     def __init__(self, organisation, projectName, personalAccessToken):
+        """Initilise the connection with Azure DevOps.
+
+        :param organisation: The organisation that the project is owned by
+        :organisation type: String
+
+        :param projectName: The name of the project to get statistics from
+        :projectName type: String
+
+        :param personalAccessToken: A valid Personal Access Token that allows access to the project
+        :personalAccessToken type: String
+
+        :return: no value
+        :rtype: no value
+        """
         self.org = organisation
         pn = projectName
         self.pat = personalAccessToken
@@ -36,23 +49,50 @@ class Project:
                 # All projects have been retrieved
                 getProjectsResponse = None
 
-    # Returns a list of repository objects
+
     def getRepositories(self):
+        """Get the list of repositories from the project.
+
+        :return: A list of repositories
+        :rtype: <List> of type <class 'azure.devops.v5_1.git.models.GitRepository'>
+        """
         from azure.devops.released.git import GitClient
 
         gitClient = self.connection.clients.get_git_client()
         repos = gitClient.get_repositories(self.project.name)
         return repos
 
-    # Returns a list of build objects
+
     def getBuilds(self):
+        """Get the list of builds from the project.
+        .. notes:: This method is a wrapper that simply calls the builds method with the mode argument set to "builds"
+
+        :return: A list of builds
+        :rtype: <List> of type <class 'azure.devops.v5_1.build.models.Build'>
+        """
         return self.builds("builds")
 
-    # Returns a list of build definition objects
+
     def getBuildDefinitions(self):
+        """Get the list of build definitions from the project.
+        .. notes:: This method is a wrapper that simply calls the builds method with the mode argument set to "definitions"
+
+        :return: A list of build definitions
+        :rtype: <List> of type <class 'azure.devops.v5_1.build.models.BuildDefinitionReference'>
+        """
         return self.builds("definitions")
 
+
     def builds(self, mode):
+        """Use the build client to get builds or build definitions from the ADO API.
+        .. notes:: This method is intented to be used by the wrapper functions.
+
+        :param mode: The type of object to return, possible options: 'definitions' 'builds'
+        :mode type: String
+
+        :return: A list of either builds or build definitions
+        :rtype: <List> of type <class 'azure.devops.v5_1.build.models.BuildDefinitionReference'> OR type <class 'azure.devops.v5_1.build.models.Build'>
+        """
         from azure.devops.released.build import BuildClient
 
         buildClient = self.connection.clients.get_build_client()
@@ -72,15 +112,37 @@ class Project:
 
         return list
 
-    # Returns a list of release objects
+
     def getReleases(self):
+        """Get the list of releases from the project.
+        .. notes:: This method is a wrapper that simply calls the releases method with the mode argument set to "releases"
+
+        :return: A list of releases
+        :rtype: <List> of type <class 'azure.devops.v5_1.release.models.Release'>
+        """
         return self.releases("releases")
 
-    # Returns a list of release objects
+
     def getReleaseDefinitions(self):
+        """Get the list of release definitions from the project.
+        .. notes:: This method is a wrapper that simply calls the releases method with the mode argument set to "definitions"
+
+        :return: A list of release definitions
+        :rtype: <List> of type <class 'azure.devops.v5_1.release.models.ReleaseDefinition'>
+        """
         return self.releases("definitions")
 
+
     def releases(self, mode):
+        """Use the release client to get releases or release definitions from the ADO API.
+        .. notes:: This method is intented to be used by the wrapper functions.
+
+        :param mode: The type of object to return, possible options: 'definitions' 'releases'
+        :mode type: String
+
+        :return: A list of releases or release definitions
+        :rtype: <List> of type <class 'azure.devops.v5_1.release.models.ReleaseDefinition'> OR type <class 'azure.devops.v5_1.release.models.Release'>
+        """
         from azure.devops.released.release import ReleaseClient
 
         releaseClient = self.connection.clients.get_release_client()
