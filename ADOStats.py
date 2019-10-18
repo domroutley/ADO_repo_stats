@@ -7,13 +7,13 @@ class Project:
         """Initilise the connection with Azure DevOps.
 
         :param organisation: The organisation that the project is owned by
-        :organisation type: String
+        :organisation type: <String>
 
         :param projectName: The name of the project to get statistics from
-        :projectName type: String
+        :projectName type: <String>
 
         :param personalAccessToken: A valid Personal Access Token that allows access to the project
-        :personalAccessToken type: String
+        :personalAccessToken type: <String>
 
         :return: no value
         :rtype: no value
@@ -88,7 +88,7 @@ class Project:
         .. notes:: This method is intented to be used by the wrapper functions.
 
         :param mode: The type of object to return, possible options: 'definitions' 'builds'
-        :mode type: String
+        :mode type: <String>
 
         :return: A list of either builds or build definitions
         :rtype: <List> of type <class 'azure.devops.v5_1.build.models.BuildDefinitionReference'> OR type <class 'azure.devops.v5_1.build.models.Build'>
@@ -138,7 +138,7 @@ class Project:
         .. notes:: This method is intented to be used by the wrapper functions.
 
         :param mode: The type of object to return, possible options: 'definitions' 'releases'
-        :mode type: String
+        :mode type: <String>
 
         :return: A list of releases or release definitions
         :rtype: <List> of type <class 'azure.devops.v5_1.release.models.ReleaseDefinition'> OR type <class 'azure.devops.v5_1.release.models.Release'>

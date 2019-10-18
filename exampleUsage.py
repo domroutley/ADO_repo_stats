@@ -1,34 +1,16 @@
 from ADOStats import Project
 
 def createDictBuild(listOfItems, verbose=False):
-    """
-    Input param: listOfItems
-    Type: <List> of type azure.devops.v5_1.build.models.[Build]
+    """Create a dictionary containing each build definition and the builds that are assigned to them.
 
-    Input param: verbose
-    Type: Boolean
-    Default: False
-    Description: Prints dictionary in readable format if True
+    :param listOfItems: A list of build items
+    :listOfItems type: <List> of type <class 'azure.devops.v5_1.build.models.Build'>
 
-    Return value:
-    Type: <Dictionary>
-        Dictionary structure:
-        {
-            definitionA:
-            {
-                total: [int],
-                succeeded: [int],
-                failed: [int],
-                cancelled: [int]
-            },
-            definitionB:
-            {
-                total: [int],
-                succeeded: [int],
-                failed: [int],
-                cancelled: [int]
-            }
-        }
+    :param verbose: Do we want to print the dictionary after creation
+    :verbose type: <Boolean>
+
+    :return: A dictionary of dictionaries containing the total results of builds
+    :rtype: <Dictionary>
     """
     dictionary = {}
     for item in listOfItems:
@@ -55,7 +37,19 @@ def createDictBuild(listOfItems, verbose=False):
 
     return dictionary
 
+
 def createDictRelease(listOfItems, verbose=False):
+    """Create a dictionary containing each release definition and the releases that are assigned to them.
+
+    :param listOfItems: A list of release items
+    :listOfItems type: <List> of type <class 'azure.devops.v5_1.release.models.Release'>
+
+    :param verbose: Do we want to print the dictionary after creation
+    :verbose type: <Boolean>
+
+    :return: A dictionary of dictionaries containing the total statuses of releases
+    :rtype: <Dictionary>
+    """
     dictionary = {}
     for item in listOfItems:
         # If this definition already exists in the dictionary
