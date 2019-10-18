@@ -29,10 +29,7 @@ Stop:`deactivate`*
 
 - ~~Number of releases~~
 - ~~Number of release definitions~~
-- Number of releases per definition
-- Number of successful releases per definition
-- Number of failed releases per definition
-- Number of cancelled releases per definition
+- ~~Number of releases per definition and their status~~
 
 
 - Number of tests passed
