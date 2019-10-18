@@ -1,11 +1,9 @@
 from ADOStats import Project
 
-def createDict(listOfItems, verbose=False):
+def createDictBuild(listOfItems, verbose=False):
     """
     Input param: listOfItems
-    Type: <List> of type azure.devops.v5_1.release.models.[Release]
-                         OR
-                         azure.devops.v5_1.build.models.[Build]
+    Type: <List> of type azure.devops.v5_1.build.models.[Build]
 
     Input param: verbose
     Type: Boolean
@@ -57,6 +55,32 @@ def createDict(listOfItems, verbose=False):
 
     return dictionary
 
+def createDictRelease(listOfItems, verbose=False):
+    dictionary = {}
+    for item in listOfItems:
+        # If this definition already exists in the dictionary
+        if item.release_definition.name in dictionary:
+            # Increment total count
+            dictionary[item.release_definition.name]["total"] += 1
+            # If outcome of item already exists in sub-dictionary
+            if item.status in dictionary[item.release_definition.name]:
+                # Increment outcome count
+                dictionary[item.release_definition.name][item.status] += 1
+            else:
+                # Create it and set to 1
+                dictionary[item.release_definition.name][item.status] = 1
+        else:
+            # Create sub-dictionary and set total to 1
+            dictionary[item.release_definition.name] = {}
+            dictionary[item.release_definition.name]["total"] = 1
+            dictionary[item.release_definition.name][item.status] = 1
+
+    if verbose:
+        for item in dictionary:
+            print(item + " " + str(dictionary[item]))
+
+    return dictionary
+
 # Get pat from file
 f = open('token', 'r')
 pat = f.read()
@@ -79,7 +103,7 @@ buildDefinitions = myProject.getBuildDefinitions()
 print("Build definitions: " + str(len(buildDefinitions)))
 
 # Get build status per build definition
-buildDict = createDict(builds, True)
+buildDict = createDictBuild(builds, True)
 
 print() # gap in printout
 
@@ -92,4 +116,4 @@ releaseDefinitions = myProject.getReleaseDefinitions()
 print("Release definitions: " + str(len(releaseDefinitions)))
 
 # Get release staus per release definition
-releaseDict = createDict(releases, True)
+releaseDict = createDictRelease(releases, True)
