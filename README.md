@@ -15,7 +15,7 @@ Stop:`deactivate`*
 - Run the `exampleUsage.py` file to see an example output. You will need to create a `token` file containing only a PAT for ADO (there must be a newline at the end of the token and nothing else in the file), and change the project initialisation call to use your organisation and project names.
 
 
-## Targets
+## TODO
 - ~~Number of repositories~~
 
 
