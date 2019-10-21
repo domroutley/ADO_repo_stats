@@ -1,4 +1,5 @@
 from ADOStats import Project
+import target
 
 def createDictBuild(listOfItems, verbose=False):
     """Create a dictionary containing each build definition and the builds that are assigned to them.
@@ -75,16 +76,8 @@ def createDictRelease(listOfItems, verbose=False):
 
     return dictionary
 
-# Get pat from file
-f = open('token', 'r')
-pat = f.read()
-pat = pat[:-1] # Strip newline from end of token
-
-# Change these lines to use your own organisation and project name
-organisation = 'dominicroutley'
-project = 'learningTest'
 # Create project
-myProject = Project(organisation, project, pat)
+myProject = Project(target.organisation, target.project, target.pat)
 print("Project: " + myProject.project.name)
 
 # Get repositories

@@ -1,5 +1,6 @@
 from ADOStats import Project
 import csv
+import target
 
 def buildData(builds, listOfDefinitions):
     """Creates a list of dictionaries containing data about the builds in a build definition.
@@ -66,21 +67,14 @@ def releaseData(releases, listOfDefinitions):
                 break
     return myList, keys
 
-# Get pat from file
-f = open('token', 'r')
-pat = f.read()
-pat = pat[:-1] # Strip newline from end of token
 
-# Change these lines to use your own organisation and project name
-organisation = "dominicroutley"
-project = "learningTest"
 # Create project
-myProject = Project(organisation, project, pat)
+myProject = Project(target.organisation, target.project, target.pat)
 
 builds = myProject.getBuilds()
 buildDefinitions = myProject.getBuildDefinitions()
 data, fields = buildData(builds, buildDefinitions)
-filename = project + '.csv'
+filename = target.project + '.csv'
 with open(filename, 'w') as csvFile:
     writer = csv.DictWriter(csvFile, fieldnames=fields)
     writer.writeheader()
@@ -90,7 +84,7 @@ csvFile.close()
 releases = myProject.getReleases()
 releaseDefinitions = myProject.getReleaseDefinitions()
 data, fields = releaseData(releases, releaseDefinitions)
-filename = project + '.csv'
+filename = target.project + '.csv'
 with open(filename, 'a') as csvFile:
     writer = csv.DictWriter(csvFile, fieldnames=fields)
     writer.writeheader()

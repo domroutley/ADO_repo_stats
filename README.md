@@ -8,10 +8,12 @@ Test:`which python3`
 Stop:`deactivate`*
 
 ## To run
+(Make sure you are using Python 3)
 - Clone repo  
   `git clone https://github.com/domroutley/ADO_repo_stats.git`
 - Install required packages  
   `pip install -r requirements.txt`
+- Change the organisation and project variables in the `target.py` file
 - Run either `printToScreen` or `exportToCSV` from the examples folder to see the output.
   - You will need a file called `token` containing a PAT and to change the initial call to the class to have your organisation and project.
 
