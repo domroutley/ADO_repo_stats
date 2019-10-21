@@ -17,9 +17,10 @@ Stop:`deactivate`*
 
 
 ## TODO
+### Git
 - ~~Number of repositories~~
 
-
+### Builds
 - ~~Number of builds~~
 - ~~Number of build definitions~~
 - ~~Number of builds per definition~~
@@ -28,10 +29,13 @@ Stop:`deactivate`*
 - ~~Number of cancelled builds per definition~~
 
 
+### Releases
 - ~~Number of releases~~
 - ~~Number of release definitions~~
 - ~~Number of releases per definition and their status~~
+- Release status to be of class deployment
 
 
+### Tests (on hold)
 - Number of tests passed
 - Number of tests failed
