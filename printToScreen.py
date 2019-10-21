@@ -80,8 +80,11 @@ f = open('token', 'r')
 pat = f.read()
 pat = pat[:-1] # Strip newline from end of token
 
+# Change these lines to use your own organisation and project name
+organisation = 'dominicroutley'
+project = 'learningTest'
 # Create project
-myProject = Project('dominicroutley', 'learningTest', pat) # Change this line to have your own organisation and project name
+myProject = Project(organisation, project, pat)
 print("Project: " + myProject.project.name)
 
 # Get repositories
