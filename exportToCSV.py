@@ -76,9 +76,12 @@ buildDefinitions = myProject.getBuildDefinitions()
 data, fields = buildData(builds, buildDefinitions)
 filename = target.project + '.csv'
 with open(filename, 'w') as csvFile:
+    titleWriter = csv.writer(csvFile, delimiter=',')
+    titleWriter.writerow(['Builds by definition'])
     writer = csv.DictWriter(csvFile, fieldnames=fields)
     writer.writeheader()
     writer.writerows(data)
+    titleWriter.writerow([''])
 csvFile.close()
 
 releases = myProject.getReleases()
@@ -86,7 +89,10 @@ releaseDefinitions = myProject.getReleaseDefinitions()
 data, fields = releaseData(releases, releaseDefinitions)
 filename = target.project + '.csv'
 with open(filename, 'a') as csvFile:
+    titleWriter = csv.writer(csvFile, delimiter=',')
+    titleWriter.writerow(['Releases by definition'])
     writer = csv.DictWriter(csvFile, fieldnames=fields)
     writer.writeheader()
     writer.writerows(data)
+    titleWriter.writerow([''])
 csvFile.close()
