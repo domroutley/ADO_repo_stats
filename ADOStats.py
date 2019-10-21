@@ -100,7 +100,7 @@ class Project:
             builds = buildClient.get_definitions(self.project.name)
         elif mode == "builds":
             builds = buildClient.get_builds(self.project.name)
-        list = builds.value
+        listOfBuilds = builds.value
 
         # While there is more to get, get them and extend the current list
         while builds.continuation_token is not None:
@@ -108,9 +108,9 @@ class Project:
                 builds = buildClient.get_definitions(self.project.name, continuation_token=builds.continuation_token)
             elif mode == "builds":
                 builds = buildClient.get_builds(self.project.name, continuation_token=builds.continuation_token)
-            list.extend(builds.value)
+            listOfBuilds.extend(builds.value)
 
-        return list
+        return listOfBuilds
 
 
     def getReleases(self):
@@ -150,7 +150,7 @@ class Project:
             releases = releaseClient.get_release_definitions(self.project.name)
         elif mode == "releases":
             releases = releaseClient.get_releases(self.project.name)
-        list = releases.value
+        listOfReleases = releases.value
 
         # While there is more to get, get them and extend the current list
         while releases.continuation_token is not None:
@@ -158,6 +158,6 @@ class Project:
                 releases = releaseClient.get_release_definitions(self.project.name, continuation_token=releases.continuation_token)
             elif mode == "releases":
                 releases = releaseClient.get_releases(self.project.name, continuation_token=releases.continuation_token)
-            list.extend(releases.value)
+            listOfReleases.extend(releases.value)
 
-        return list
+        return listOfReleases
