@@ -33,6 +33,22 @@ def main(organisationName, projectName, pat):
 
 
 def writeFile(projectName, data, fields, mode):
+    """Writes the given data to a csv file.
+
+    :param projectName: The name of the project (used in file/foldername)
+    :projectName type: <String>
+
+    :param data: The data to be written, usually the output of createBuildStructure or createReleaseStructure
+    :data type: <List> of type <Dictionary>
+
+    :param fields: The field titles to put at the top of the file
+    :fields type: <List> of type <String>
+
+    :param mode: What to put at the end of the filenbame to distinguish it (build, release)
+    :mode type: <String>
+
+    :return: None
+    """
     if not os.path.exists(projectName):
         os.mkdir(projectName)
     filename = projectName + '/' + projectName + '-' + mode + '.csv'
