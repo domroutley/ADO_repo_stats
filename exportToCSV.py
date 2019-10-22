@@ -52,7 +52,7 @@ def releaseData(releases, listOfDefinitions):
     """Creates a list of dictionaries containing data about the releases in a release definition.
 
     :param releases: A list of release objects to be counted in the dictionaries
-    :builds type: <List> of type <class 'azure.devops.v5_1.release.models.Release'>
+    :releases type: <List> of type <class 'azure.devops.v5_1.release.models.Release'>
 
     :param listOfDefinitions: A list of release definition objects to be added as dictionaries (name only)
     :listOfDefinitions type: <List> of type <class 'azure.devops.v5_1.release.models.ReleaseDefinition'>
