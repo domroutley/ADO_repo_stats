@@ -1,4 +1,5 @@
-from AzureDevOpsWrapper import Project
+import AzureDevOpsWrapper
+
 import csv, os
 
 def main(organisationName, projectName, pat):
@@ -15,6 +16,16 @@ def main(organisationName, projectName, pat):
 
     :return: None
     """
+
+    theProject = AzureDevOpsWrapper.Project(organisationName, projectName, pat)
+
+    repositories = theProject.getRepositories()
+    builds = theProject.getBuilds()
+    buildDefinitions = theProject.getBuildDefinitions()
+    releases = theProject.getReleases()
+    releaseDefinitions = theProject.getReleaseDefinitions()
+
+    
     pass
 
 
