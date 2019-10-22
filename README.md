@@ -19,11 +19,11 @@ Stop:`deactivate`*
 
 ## What this code does
 - Outputs 5 .csv files
-  - [project name]-overview.csv
-  - [project name]-git.csv
-  - [project name]-build.csv
-  - [project name]-release.csv
-  - [project name]-all.csv
+  - [project name]/[project name]-overview.csv
+  - [project name]/project name]-git.csv
+  - [project name]/project name]-build.csv
+  - [project name]/project name]-release.csv
+  - [project name]/project name]-all.csv
 
 ### Overview file contains...
 - [ ] Number of repositories

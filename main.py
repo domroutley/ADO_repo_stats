@@ -1,5 +1,5 @@
-import csv
 from AzureDevOpsWrapper import Project
+import csv, os
 
 def main(organisationName, projectName, pat):
     """Creates five csv files containing raw statistics about the given project.
@@ -16,6 +16,17 @@ def main(organisationName, projectName, pat):
     :return: None
     """
     pass
+
+
+def writeFile(projectName, data, fields, mode):
+    if not os.path.exists(projectName):
+        os.mkdir(projectName)
+    filename = projectName + '/' + projectName + '-' + mode + '.csv'
+    with open(filename, 'w') as csvFile:
+        writer = csv.DictWriter(csvFile, fieldnames=fields)
+        writer.writeheader()
+        writer.writerows(data)
+    csvFile.close()
 
 
 def buildData(builds, listOfDefinitions):
