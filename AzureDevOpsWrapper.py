@@ -56,11 +56,28 @@ class Project:
         :return: A list of repositories
         :rtype: <List> of type <class 'azure.devops.v5_1.git.models.GitRepository'>
         """
-        from azure.devops.released.git import GitClient
 
         gitClient = self.connection.clients.get_git_client()
-        repos = gitClient.get_repositories(self.project.name)
-        return repos
+        return gitClient.get_repositories(self.project.name)
+
+
+    def getRepositoryStats(self, repo):
+        """Return the statistics for a repository.
+
+        !!!
+        NOT USED
+        This function relies on .getStats which is not yet released (maybe 6.0)
+        See this for a related answer https://github.com/microsoft/azure-devops-python-api/issues/273
+        !!!
+
+        :param repo: A repository object to get the stats for
+        :repo type: <class 'azure.devops.v5_1.git.models.GitRepository'>
+
+        :return: None
+        """
+        return None # Filler
+        gitClient = self.connection.clients.get_git_client()
+        return gitClient.get_stats(self.project.name, repo.id)
 
 
     def getBuilds(self):
@@ -93,7 +110,6 @@ class Project:
         :return: A list of either builds or build definitions
         :rtype: <List> of type <class 'azure.devops.v5_1.build.models.BuildDefinitionReference'> OR type <class 'azure.devops.v5_1.build.models.Build'>
         """
-        from azure.devops.released.build import BuildClient
 
         buildClient = self.connection.clients.get_build_client()
         if mode == "definitions":
@@ -143,7 +159,6 @@ class Project:
         :return: A list of releases or release definitions
         :rtype: <List> of type <class 'azure.devops.v5_1.release.models.ReleaseDefinition'> OR type <class 'azure.devops.v5_1.release.models.Release'>
         """
-        from azure.devops.released.release import ReleaseClient
 
         releaseClient = self.connection.clients.get_release_client()
         if mode == "definitions":

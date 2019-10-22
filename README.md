@@ -27,7 +27,7 @@ Stop:`deactivate`*
 
 ### Overview file contains...
 - [ ] Number of repositories
-- [ ] Number of commits in total
+- [ ] Number of commits in total (master)
 - [ ] Number of branches created
 - [ ] Number of builds
 - [ ] Number of build definitions
@@ -38,7 +38,7 @@ Stop:`deactivate`*
 
 ### Git file contains...
 - [ ] Number of repositories
-- [ ] Number of commits in total
+- [ ] Number of commits in total (master)
 - [ ] Number of branches created
 - [ ] Number of commits per repo
 - [ ] Number of branches created per repo
