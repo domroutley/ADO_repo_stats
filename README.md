@@ -34,12 +34,15 @@ Stop:`deactivate`*
 - [ ] Average time per build
 - [ ] Number of releases
 - [ ] Number of release definitions
+- [ ] Average time per release
 
 ### Git file contains...
 - [ ] Number of repositories
 - [ ] Number of commits in total
-- [ ] Number of commits per repo
 - [ ] Number of branches created
+- [ ] Number of commits per repo
+- [ ] Number of branches created per repo
+- [ ] Number of lines in master per repo
 
 ### Build file contains...
 - [ ] Number of builds
@@ -52,10 +55,10 @@ Stop:`deactivate`*
 - [ ] Average time per build
 
 ### Release file contains...
-- [ ] Number of releases
-- [ ] Number of release definitions
-- [ ] Number of releases per definition
+For each release:
+- [ ] Release definition
 - [ ] Number of deployments and their status (sort by release definition)
+- [ ] What environment release was made into
 
 ### All file contains...
 - Everything that the other files do, in one big long list
