@@ -35,7 +35,7 @@ def main(organisationName, projectName, pat):
     writeFile(projectName, gitStructure, gitFields, "git")
 
 
-def writeFile(projectName, data, fields, mode):
+def writeFile(projectName, data, fields, file, mode='w'):
     """Writes the given data to a csv file.
 
     :param projectName: The name of the project (used in file/foldername)
@@ -47,15 +47,19 @@ def writeFile(projectName, data, fields, mode):
     :param fields: The field titles to put at the top of the file
     :fields type: <List> of type <String>
 
-    :param mode: What to put at the end of the filenbame to distinguish it (build, release)
-    :mode type: <String>
+    :param file: What to put at the end of the filename to distinguish it (build, release)
+    :file type: <String>
+
+    :param mode: What mode to write in (drirect pass through to open([filename], mode))
+    :file type: <char>
+    :default: 'w'
 
     :return: None
     """
     if not os.path.exists(projectName):
         os.mkdir(projectName)
-    filename = projectName + '/' + projectName + '-' + mode + '.csv'
-    with open(filename, 'w') as csvFile:
+    filename = projectName + '/' + projectName + '-' + file + '.csv'
+    with open(filename, mode) as csvFile:
         writer = csv.DictWriter(csvFile, fieldnames=fields)
         writer.writeheader()
         writer.writerows(data)
