@@ -84,6 +84,7 @@ def createBuildStructure(builds, listOfDefinitions):
             # Add all definition names to the list
             #   This will mean that even if they have no builds associated they are still represented
             #   We also set all of the possible results to 0
+            # Hi future maintainer, the order of the keys here is the order that they appear in the csv file
             myList.append({'name': definition.name, 'succeeded': 0, 'partiallySucceeded': 0, 'cancelled': 0, 'failed': 0, 'none': 0, 'total': 0})
         # create list of keys, pulls keys from above dictionary
         for key in myList[0]:
@@ -121,7 +122,8 @@ def createReleaseStructure(releases, listOfDefinitions):
     keys = []
     if len(listOfDefinitions) > 0:
         for definition in listOfDefinitions:
-            myList.append({'name': definition.name, 'total': 0})
+            # Hi future maintainer, the order of the keys here is the order that they appear in the csv file
+            myList.append({'name': definition.name, 'succeeded': 0, 'partiallySucceeded': 0, 'cancelled': 0, 'failed': 0, 'inProgress': 0, 'notDeployed': 0, 'all': 0, 'undefined': 0, 'total': 0})
         # create list of keys, pulls keys from above dictionary
         for key in myList[0]:
             keys.append(key)
@@ -130,12 +132,7 @@ def createReleaseStructure(releases, listOfDefinitions):
         for item in releases:
             for definitionDict in myList:
                 if item.release_definition.name == definitionDict['name']:
-                    if not item.status in definitionDict:
-                        definitionDict[item.status] = 1
-                        if not item.status in keys:
-                            keys.append(item.status)
-                    else:
-                        definitionDict[item.status] += 1
+                    definitionDict[item.deployment_status] += 1
                     definitionDict['total'] += 1
                     break
     return myList, keys

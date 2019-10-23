@@ -163,7 +163,7 @@ class Project:
         if mode == "definitions":
             releases = releaseClient.get_release_definitions(self.project.name)
         elif mode == "releases":
-            releases = releaseClient.get_releases(self.project.name)
+            releases = releaseClient.get_deployments(self.project.name)
         listOfReleases = releases.value
 
         # While there is more to get, get them and extend the current list
@@ -171,7 +171,7 @@ class Project:
             if mode == "definitions":
                 releases = releaseClient.get_release_definitions(self.project.name, continuation_token=releases.continuation_token)
             elif mode == "releases":
-                releases = releaseClient.get_releases(self.project.name, continuation_token=releases.continuation_token)
+                releases = releaseClient.get_deployments(self.project.name, continuation_token=releases.continuation_token)
             listOfReleases.extend(releases.value)
 
         return listOfReleases
