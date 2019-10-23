@@ -31,6 +31,9 @@ def main(organisationName, projectName, pat):
     releaseStructure, releaseFields = createReleaseStructure(releases, releaseDefinitions)
     writeFile(projectName, releaseStructure, releaseFields, "release")
 
+    gitStructure, gitFields = createGitStructure(repositories)
+    writeFile(projectName, gitStructure, gitFields, "git")
+
 
 def writeFile(projectName, data, fields, mode):
     """Writes the given data to a csv file.
@@ -136,6 +139,29 @@ def createReleaseStructure(releases, listOfDefinitions):
                     definitionDict['total'] += 1
                     break
     return myList, keys
+
+
+def createGitStructure(repositories):
+    """Creates a list of dictionaries containing data about the repositories.
+
+    :param repositories: A List of repository objects
+    :repositories type: <List> of type <class 'azure.devops.v5_1.git.models.GitRepository'>
+
+    :return: A list of dictionaries, one for each repository
+    :rtype: <List> of type <Dictionary>
+
+    :return: A list of the keys used in the dictionaries, this is used for the headers of the csv file
+    :rtype: <List> of type <String>
+    """
+    keys = []
+    myList = []
+    if len(repositories) > 0:
+        for repository in repositories:
+            myList.append({'repository': repository.name, 'default branch': repository.default_branch})
+        # create list of keys, pulls keys from above dictionary
+        for key in myList[0]:
+            keys.append(key)
+
     return myList, keys
 
 
