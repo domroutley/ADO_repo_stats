@@ -26,37 +26,35 @@ Stop:`deactivate`*
   - [project name]/project name]-all.csv
 
 ### Overview file contains...
-- [ ] Number of repositories
-- [ ] Number of commits in total (master)
-- [ ] Number of branches created
-- [ ] Number of builds
+- [x] Number of repositories
+- [ ] ~~Number of commits in total~~ (on hold for API update)
+- [x] Number of builds
 - [ ] Number of build definitions
 - [ ] Average time per build
-- [ ] Number of releases
+- [x] Number of releases
 - [ ] Number of release definitions
 - [ ] Average time per release
 
 ### Git file contains...
-- [ ] Number of repositories
-- [ ] Number of commits in total (master)
-- [ ] Number of branches created
-- [ ] Number of commits per repo
-- [ ] Number of branches created per repo
-- [ ] Number of lines in master per repo
+- [x] Number of repositories
+- [x] Default branch of repository
+- [ ] ~~Number of commits in total (for project)~~ (on hold for API update)
+- [ ] ~~Number of commits per repo~~ (on hold for API update)
+- [ ] ~~Number of lines in master per repo~~ (unknown how to do)
 
 ### Build file contains...
-- [ ] Number of builds
+- [x] Number of builds
 - [ ] Number of build definitions
-- [ ] Number of builds per definition
-- [ ] Number of successful builds per definition
-- [ ] Number of failed builds per definition
-- [ ] Number of cancelled builds per definition
+- [x] Number of builds per definition
+- [x] Number of successful builds per definition
+- [x] Number of failed builds per definition
+- [x] Number of cancelled builds per definition
 - [ ] Time per build
 - [ ] Average time per build
 
 ### Release file contains...
 For each release:
-- [ ] Release definition
+- [x] Release definition
 - [ ] Number of deployments and their status (sort by release definition)
 - [ ] What environment release was made into
 
