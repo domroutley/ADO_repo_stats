@@ -37,6 +37,7 @@ def main(organisationName, projectName, pat):
 
 def writeFile(projectName, data, fields, file, mode='w'):
     """Writes the given data to a csv file.
+    ..:notes: If data and fields are set to empty list, this function will add an empty line (make sure to set mode to 'a')
 
     :param projectName: The name of the project (used in file/foldername)
     :projectName type: <String>
