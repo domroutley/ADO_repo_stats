@@ -26,18 +26,31 @@ def main(organisationName, projectName, pat):
     releaseDefinitions = theProject.getReleaseDefinitions()
 
     buildStructure, buildFields = createBuildStructure(builds, buildDefinitions)
-    writeFile(projectName, buildStructure, buildFields, "build")
-
     releaseStructure, releaseFields = createReleaseStructure(releases, releaseDefinitions)
-    writeFile(projectName, releaseStructure, releaseFields, "release")
+    writeFile(projectName, ['builds'], [], 'overview', 'w')
+    writeFile(projectName, buildStructure, buildFields, 'overview')
+    writeFile(projectName, ['number of builds', len(builds)], [], 'overview', 'w')
+
+    writeFile(projectName, [], [], 'overview')
+
+    writeFile(projectName, ['releases (deployments)'], [], 'overview', 'w')
+    writeFile(projectName, releaseStructure, releaseFields, 'overview')
+    writeFile(projectName, ['number of releases', len(releases)], [], 'overview', 'w')
+
+    writeFile(projectName, [], [], 'overview')
+
+    writeFile(projectName, ['repositories'], [], 'overview', 'w')
+    writeFile(projectName, ['number of repositories', len(repositories)], [], 'overview')
+
 
     gitStructure, gitFields = createGitStructure(repositories)
-    writeFile(projectName, gitStructure, gitFields, "git")
 
 
-def writeFile(projectName, data, fields, file, mode='w'):
+
+def writeFile(projectName, data, fields, file, mode='a'):
     """Writes the given data to a csv file.
-    ..:notes: If data and fields are set to empty list, this function will add an empty line (make sure to set mode to 'a')
+    ..:notes: If data and fields are set to empty list, this function will add an empty line
+    If fields is set to empty list (and data is not), this function will add to the csv without headers
 
     :param projectName: The name of the project (used in file/foldername)
     :projectName type: <String>
@@ -53,7 +66,7 @@ def writeFile(projectName, data, fields, file, mode='w'):
 
     :param mode: What mode to write in (drirect pass through to open([filename], mode))
     :file type: <char>
-    :default: 'w'
+    :default: 'a'
 
     :return: None
     """
@@ -61,9 +74,13 @@ def writeFile(projectName, data, fields, file, mode='w'):
         os.mkdir(projectName)
     filename = projectName + '/' + projectName + '-' + file + '.csv'
     with open(filename, mode) as csvFile:
-        writer = csv.DictWriter(csvFile, fieldnames=fields)
-        writer.writeheader()
-        writer.writerows(data)
+        if fields == []:
+            writer = csv.writer(csvFile)
+            writer.writerow(data)
+        else:
+            writer = csv.DictWriter(csvFile, fieldnames=fields)
+            writer.writeheader()
+            writer.writerows(data)
     csvFile.close()
 
 
