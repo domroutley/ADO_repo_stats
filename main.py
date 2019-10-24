@@ -102,7 +102,15 @@ def createBuildStructure(builds, listOfDefinitions):
             #   This will mean that even if they have no builds associated they are still represented
             #   We also set all of the possible results to 0
             # Hi future maintainer, the order of the keys here is the order that they appear in the csv file
-            myList.append({'name': definition.name, 'succeeded': 0, 'partiallySucceeded': 0, 'canceled': 0, 'failed': 0, 'none': 0, 'total': 0})
+            myList.append({
+            'name': definition.name,
+            'succeeded': 0,
+            'partiallySucceeded': 0,
+            'canceled': 0,
+            'failed': 0,
+            'none': 0,
+            'total': 0
+            })
         # create list of keys, pulls keys from above dictionary
         for key in myList[0]:
             keys.append(key)
@@ -140,7 +148,18 @@ def createReleaseStructure(releases, listOfDefinitions):
     if len(listOfDefinitions) > 0:
         for definition in listOfDefinitions:
             # Hi future maintainer, the order of the keys here is the order that they appear in the csv file
-            myList.append({'name': definition.name, 'succeeded': 0, 'partiallySucceeded': 0, 'cancelled': 0, 'failed': 0, 'inProgress': 0, 'notDeployed': 0, 'all': 0, 'undefined': 0, 'total': 0})
+            myList.append({
+            'name': definition.name,
+            'succeeded': 0,
+            'partiallySucceeded': 0,
+            'cancelled': 0,
+            'failed': 0,
+            'inProgress': 0,
+            'notDeployed': 0,
+            'all': 0,
+            'undefined': 0,
+            'total': 0
+            })
         # create list of keys, pulls keys from above dictionary
         for key in myList[0]:
             keys.append(key)
