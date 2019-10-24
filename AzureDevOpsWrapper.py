@@ -1,5 +1,6 @@
 from azure.devops.connection import Connection
 from msrest.authentication import BasicAuthentication
+import requests, json
 
 class Project:
 
@@ -19,7 +20,7 @@ class Project:
         :rtype: no value
         """
         self.org = organisation
-        pn = projectName
+        self.projectName = projectName
         self.pat = personalAccessToken
 
         organizationUrl = 'https://dev.azure.com/' + self.org
@@ -35,7 +36,7 @@ class Project:
         getProjectsResponse = coreClient.get_projects()
         while getProjectsResponse is not None:
             for project in getProjectsResponse.value:
-                if (project.name == pn):
+                if (project.name == self.projectName):
                     self.project = project
                     # Stop grabbing stuff
                     getProjectsResponse.continuation_token = None
@@ -46,7 +47,7 @@ class Project:
             else:
                 # All projects have been retrieved
                 getProjectsResponse = None
-                raise Exception('Project "' + pn + '" was not found.')
+                raise Exception('Project {} was not found.'.format(self.projectName))
 
 
     def getRepositories(self):
@@ -60,23 +61,23 @@ class Project:
         return gitClient.get_repositories(self.project.name)
 
 
-    def getRepositoryStats(self, repo):
-        """Return the statistics for a repository.
-
-        !!!
-        NOT USED
-        This function relies on .getStats which is not yet released (maybe 6.0)
-        See this for a related answer https://github.com/microsoft/azure-devops-python-api/issues/273
-        !!!
+    def getRepositoryCommits(self, repo, branch=''):
+        """Return the commits for a repository.
+        ..:note: This function uses a direct call to the API as opposed to using the python wrapper module, this is because in v5.1 of the python wrapper there is no way to currently return the data we require
 
         :param repo: A repository object to get the stats for
         :repo type: <class 'azure.devops.v5_1.git.models.GitRepository'>
 
-        :return: None
+        :param branch: What branch to target, blank for all
+        :branch type: 
+
+        :return: All of the commits for that repository as a dictionary
+        :rtype: <Dictionary>
         """
-        return None # Filler
-        gitClient = self.connection.clients.get_git_client()
-        return gitClient.get_stats(self.project.name, repo.id)
+        if branch is not None:
+            branch = 'searchCriteria.itemVersion.version={}&'.format(branch)
+        response = requests.get('https://dev.azure.com/{}/{}/_apis/git/repositories/{}/commits?searchCriteria.$top=10000&{}api-version=5.1'.format(self.org, self.projectName, repo.id, branch), auth=requests.auth.HTTPBasicAuth('', self.pat))
+        return json.loads(response.text)
 
 
     def getBuilds(self):
