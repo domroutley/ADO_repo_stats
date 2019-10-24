@@ -23,43 +23,40 @@ Stop:`deactivate`*
   - [project name]/project name]-git.csv
   - [project name]/project name]-build.csv
   - [project name]/project name]-release.csv
-  - [project name]/project name]-all.csv
 
 ### Overview file contains...
 - [x] Number of repositories
-- [ ] ~~Number of commits in total~~ (on hold for API update)
+- [x] Number of commits in total
 - [x] Number of builds
-- [ ] Number of build definitions
+- [x] Number of build definitions
 - [ ] Average time per build
 - [x] Number of releases
-- [ ] Number of release definitions
-- [ ] Average time per release
+- [x] Number of release definitions
+- [ ] Average time per release deployment
 
 ### Git file contains...
 - [x] Number of repositories
 - [x] Default branch of repository
-- [ ] ~~Number of commits in total (for project)~~ (on hold for API update)
-- [ ] ~~Number of commits per repo~~ (on hold for API update)
-- [ ] ~~Number of lines in master per repo~~ (unknown how to do)
+- [x] Number of commits in total (for project)
+- [x] Number of commits per repo
+- [ ] Number of commits not in master (per repo)
+- [ ] Number of lines in master per repo (unknown)
 
 ### Build file contains...
 - [x] Number of builds
-- [ ] Number of build definitions
+- [x] Number of build definitions
 - [x] Number of builds per definition
-- [x] Number of successful builds per definition
-- [x] Number of failed builds per definition
-- [x] Number of cancelled builds per definition
-- [ ] Time per build
+- [x] Number of each type of outcome for a build per definition
+- [ ] Time per build (print build ids)
 - [ ] Average time per build
 
 ### Release file contains...
-For each release:
-- [x] Release definition
-- [ ] Number of deployments and their status (sort by release definition)
-- [ ] What environment release was made into
-
-### All file contains...
-- Everything that the other files do, in one big long list
+- [x] Number of release deployments
+- [x] Number of release definitions
+- [x] Number of deployments per definition
+- [x] Number of each type of outcome for a deployment per definition
+- [ ] Time per deployment (print deployment ids)
+- [ ] Average time per deployment
 
 #TODO
-- Rewrite all calls to the API to use direct calls
+- [ ] Rewrite all calls to the API to use direct calls
