@@ -117,6 +117,9 @@ def createBuildStructure(builds, listOfDefinitions):
 
     if len(builds) > 0:
         for item in builds:
+            # This may happen if the build hasnt finished yet
+            if item.result is None:
+                continue
             for definitionDict in myList:
                 # If this is the same definition (in list to be filled and list to take things from)
                 if item.definition.name == definitionDict['name']:
