@@ -29,21 +29,16 @@ def main(organisationName, projectName, pat):
     releaseStructure, releaseFields = createReleaseStructure(releases, releaseDefinitions)
     gitStructure, gitFields = createGitStructure(repositories, theProject)
 
-    writeFile(projectName, ['builds'], [], 'overview', 'w')
-    writeFile(projectName, buildStructure, buildFields, 'overview')
+    writeFile(projectName, ['overview'], [], 'overview', 'w')
     writeFile(projectName, ['number of builds', len(builds)], [], 'overview')
-
-    writeFile(projectName, [], [], 'overview')
-
-    writeFile(projectName, ['releases (deployments)'], [], 'overview')
-    writeFile(projectName, releaseStructure, releaseFields, 'overview')
+    writeFile(projectName, ['number of build definitions', len(buildDefinitions)], [], 'overview')
     writeFile(projectName, ['number of releases', len(releases)], [], 'overview')
-
-    writeFile(projectName, [], [], 'overview')
-
-    writeFile(projectName, ['repositories'], [], 'overview')
+    writeFile(projectName, ['number of release definitions', len(releaseDefinitions)], [], 'overview')
     writeFile(projectName, ['number of repositories', len(repositories)], [], 'overview')
     writeFile(projectName, gitStructure, gitFields, 'overview')
+    # writeFile(projectName, buildStructure, buildFields, 'overview')
+    # writeFile(projectName, releaseStructure, releaseFields, 'overview')
+    # writeFile(projectName, gitStructure, gitFields, 'overview')
 
 
 def writeFile(projectName, data, fields, file, mode='a'):
