@@ -29,17 +29,17 @@ def main(organisationName, projectName, pat):
     releaseStructure, releaseFields = createReleaseStructure(releases, releaseDefinitions)
     writeFile(projectName, ['builds'], [], 'overview', 'w')
     writeFile(projectName, buildStructure, buildFields, 'overview')
-    writeFile(projectName, ['number of builds', len(builds)], [], 'overview', 'w')
+    writeFile(projectName, ['number of builds', len(builds)], [], 'overview')
 
     writeFile(projectName, [], [], 'overview')
 
-    writeFile(projectName, ['releases (deployments)'], [], 'overview', 'w')
+    writeFile(projectName, ['releases (deployments)'], [], 'overview')
     writeFile(projectName, releaseStructure, releaseFields, 'overview')
-    writeFile(projectName, ['number of releases', len(releases)], [], 'overview', 'w')
+    writeFile(projectName, ['number of releases', len(releases)], [], 'overview')
 
     writeFile(projectName, [], [], 'overview')
 
-    writeFile(projectName, ['repositories'], [], 'overview', 'w')
+    writeFile(projectName, ['repositories'], [], 'overview')
     writeFile(projectName, ['number of repositories', len(repositories)], [], 'overview')
 
 
