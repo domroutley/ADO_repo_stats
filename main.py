@@ -1,6 +1,6 @@
 import AzureDevOpsWrapper
 
-import csv, os
+import csv, os, json
 
 def main(organisationName, projectName, pat):
     """Creates five csv files containing raw statistics about the given project.
@@ -27,6 +27,8 @@ def main(organisationName, projectName, pat):
 
     buildStructure, buildFields = createBuildStructure(builds, buildDefinitions)
     releaseStructure, releaseFields = createReleaseStructure(releases, releaseDefinitions)
+    gitStructure, gitFields = createGitStructure(repositories, theProject)
+
     writeFile(projectName, ['builds'], [], 'overview', 'w')
     writeFile(projectName, buildStructure, buildFields, 'overview')
     writeFile(projectName, ['number of builds', len(builds)], [], 'overview')
@@ -41,10 +43,7 @@ def main(organisationName, projectName, pat):
 
     writeFile(projectName, ['repositories'], [], 'overview')
     writeFile(projectName, ['number of repositories', len(repositories)], [], 'overview')
-
-
-    gitStructure, gitFields = createGitStructure(repositories)
-
+    writeFile(projectName, gitStructure, gitFields, 'overview')
 
 
 def writeFile(projectName, data, fields, file, mode='a'):
@@ -160,11 +159,14 @@ def createReleaseStructure(releases, listOfDefinitions):
     return myList, keys
 
 
-def createGitStructure(repositories):
+def createGitStructure(repositories, theProject):
     """Creates a list of dictionaries containing data about the repositories.
 
     :param repositories: A List of repository objects
     :repositories type: <List> of type <class 'azure.devops.v5_1.git.models.GitRepository'>
+
+    :param theProject: The AzureDevOpsWrapper Project
+    :theProject type: <class 'AzureDevOpsWrapper.Project'>
 
     :return: A list of dictionaries, one for each repository
     :rtype: <List> of type <Dictionary>
@@ -176,7 +178,31 @@ def createGitStructure(repositories):
     myList = []
     if len(repositories) > 0:
         for repository in repositories:
-            myList.append({'repository': repository.name, 'default branch': repository.default_branch})
+            additions = deletions = editions = 0
+            # If the repo is not totally empty
+            if repository.default_branch is not None:
+                defaultBranch = repository.default_branch[11:]
+                repositoryCommits = theProject.getRepositoryCommits(repository)
+                defaultBranchCommits = theProject.getRepositoryCommits(repository, branch=defaultBranch)
+                for commit in repositoryCommits['value']:
+                    additions = additions + int(commit['changeCounts']['Add'])
+                    deletions = deletions + int(commit['changeCounts']['Delete'])
+                    editions = editions + int(commit['changeCounts']['Edit'])
+            else:
+                # Set some defaults
+                defaultBranch = ''
+                defaultBranchCommits = {'count': 0}
+                repositoryCommits = {'count': 0}
+
+            myList.append({
+            'repository': repository.name,
+            'default branch': defaultBranch,
+            'number of commits (default branch)': defaultBranchCommits['count'],
+            'number of commits (all branches)': repositoryCommits['count'],
+            'number of additions (default branch)': additions,
+            'number of deletions (default branch)': deletions,
+            'number of edits (default branch)': editions
+            })
         # create list of keys, pulls keys from above dictionary
         for key in myList[0]:
             keys.append(key)
