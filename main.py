@@ -27,7 +27,7 @@ def main(organisationName, projectName, pat):
 
     buildStructure, buildFields = createBuildStructure(builds, buildDefinitions)
     releaseStructure, releaseFields = createReleaseStructure(releases, releaseDefinitions)
-    gitStructure, gitFields = createGitStructure(repositories, theProject)
+    gitStructure, gitFields, commitsInTotal = createGitStructure(repositories, theProject)
 
     writeFile(projectName, ['overview'], [], 'overview', 'w')
     writeFile(projectName, ['number of builds', len(builds)], [], 'overview')
@@ -35,7 +35,8 @@ def main(organisationName, projectName, pat):
     writeFile(projectName, ['number of releases', len(releases)], [], 'overview')
     writeFile(projectName, ['number of release definitions', len(releaseDefinitions)], [], 'overview')
     writeFile(projectName, ['number of repositories', len(repositories)], [], 'overview')
-    writeFile(projectName, gitStructure, gitFields, 'overview')
+    writeFile(projectName, ['number of commits', commitsInTotal], [], 'overview')
+
     # writeFile(projectName, buildStructure, buildFields, 'overview')
     # writeFile(projectName, releaseStructure, releaseFields, 'overview')
     # writeFile(projectName, gitStructure, gitFields, 'overview')
@@ -171,6 +172,7 @@ def createGitStructure(repositories, theProject):
     """
     keys = []
     myList = []
+    commitsInTotal = 0
     if len(repositories) > 0:
         for repository in repositories:
             additions = deletions = editions = 0
@@ -180,9 +182,9 @@ def createGitStructure(repositories, theProject):
                 repositoryCommits = theProject.getRepositoryCommits(repository)
                 defaultBranchCommits = theProject.getRepositoryCommits(repository, branch=defaultBranch)
                 for commit in repositoryCommits['value']:
-                    additions = additions + int(commit['changeCounts']['Add'])
-                    deletions = deletions + int(commit['changeCounts']['Delete'])
-                    editions = editions + int(commit['changeCounts']['Edit'])
+                    additions += int(commit['changeCounts']['Add'])
+                    deletions += int(commit['changeCounts']['Delete'])
+                    editions += int(commit['changeCounts']['Edit'])
             else:
                 # Set some defaults
                 defaultBranch = ''
@@ -198,11 +200,12 @@ def createGitStructure(repositories, theProject):
             'number of deletions (default branch)': deletions,
             'number of edits (default branch)': editions
             })
+            commitsInTotal += repositoryCommits['count']
         # create list of keys, pulls keys from above dictionary
         for key in myList[0]:
             keys.append(key)
 
-    return myList, keys
+    return myList, keys, commitsInTotal
 
 
 if __name__ == "__main__":
