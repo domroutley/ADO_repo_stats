@@ -60,3 +60,6 @@ For each release:
 
 ### All file contains...
 - Everything that the other files do, in one big long list
+
+#TODO
+- Rewrite all calls to the API to use direct calls
