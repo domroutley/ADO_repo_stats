@@ -29,8 +29,8 @@ def main(organisationName, projectName, pat):
     releaseStructure, releaseFields = createReleaseStructures(releases, releaseDefinitions)
     gitStructure, gitFields, commitsInTotal = createGitStructures(repositories, theProject)
 
-    writeFile(projectName, ['overview'], [], 'overview', 'w')
-    writeFile(projectName, ['number of builds', len(builds)], [], 'overview')
+
+    writeFile(projectName, ['number of builds', len(builds)], [], 'overview', 'w')
     writeFile(projectName, ['number of build definitions', len(buildDefinitions)], [], 'overview')
     writeFile(projectName, ['number of releases', len(releases)], [], 'overview')
     writeFile(projectName, ['number of release definitions', len(releaseDefinitions)], [], 'overview')
@@ -38,19 +38,17 @@ def main(organisationName, projectName, pat):
     writeFile(projectName, ['number of commits', commitsInTotal], [], 'overview')
 
 
-    writeFile(projectName, ['build'], [], 'build', 'w')
-    writeFile(projectName, buildStructure, buildFields, 'build')
+    writeFile(projectName, buildStructure, buildFields, 'build', 'w')
     writeFile(projectName, ['number of builds', len(builds)], [], 'build')
     writeFile(projectName, ['number of build definitions', len(buildDefinitions)], [], 'build')
 
 
-    writeFile(projectName, ['release'], [], 'release', 'w')
-    writeFile(projectName, releaseStructure, releaseFields, 'release')
+    writeFile(projectName, releaseStructure, releaseFields, 'release', 'w')
     writeFile(projectName, ['number of releases', len(releases)], [], 'release')
     writeFile(projectName, ['number of release definitions', len(releaseDefinitions)], [], 'release')
 
-    writeFile(projectName, ['git repositories'], [], 'git', 'w')
-    writeFile(projectName, gitStructure, gitFields, 'git')
+
+    writeFile(projectName, gitStructure, gitFields, 'git', 'w')
     writeFile(projectName, ['number of repositories', len(repositories)], [], 'git')
     writeFile(projectName, ['number of commits in total', commitsInTotal], [], 'git')
 
