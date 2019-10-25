@@ -25,9 +25,9 @@ def main(organisationName, projectName, pat):
     releases = theProject.getReleases()
     releaseDefinitions = theProject.getReleaseDefinitions()
 
-    buildStructure, buildFields = createBuildStructure(builds, buildDefinitions)
-    releaseStructure, releaseFields = createReleaseStructure(releases, releaseDefinitions)
-    gitStructure, gitFields, commitsInTotal = createGitStructure(repositories, theProject)
+    buildStructure, buildFields = createBuildStructures(builds, buildDefinitions)
+    releaseStructure, releaseFields = createReleaseStructures(releases, releaseDefinitions)
+    gitStructure, gitFields, commitsInTotal = createGitStructures(repositories, theProject)
 
     writeFile(projectName, ['overview'], [], 'overview', 'w')
     writeFile(projectName, ['number of builds', len(builds)], [], 'overview')
@@ -92,7 +92,7 @@ def writeFile(projectName, data, fields, file, mode='a'):
     csvFile.close()
 
 
-def createBuildStructure(builds, listOfDefinitions):
+def createBuildStructures(builds, listOfDefinitions):
     """Creates a list of dictionaries containing data about the builds in a build definition.
 
     :param builds: A list of build objects to be counted in the dictionaries
@@ -144,7 +144,7 @@ def createBuildStructure(builds, listOfDefinitions):
     return myList, keys
 
 
-def createReleaseStructure(releases, listOfDefinitions):
+def createReleaseStructures(releases, listOfDefinitions):
     """Creates a list of dictionaries containing data about the releases in a release definition.
 
     :param releases: A list of release objects to be counted in the dictionaries
@@ -190,7 +190,7 @@ def createReleaseStructure(releases, listOfDefinitions):
     return myList, keys
 
 
-def createGitStructure(repositories, theProject):
+def createGitStructures(repositories, theProject):
     """Creates a list of dictionaries containing data about the repositories.
 
     :param repositories: A List of repository objects
