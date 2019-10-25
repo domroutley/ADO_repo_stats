@@ -25,7 +25,7 @@ def main(organisationName, projectName, pat):
     releases = theProject.getReleases()
     releaseDefinitions = theProject.getReleaseDefinitions()
 
-    buildStructure, buildFields = createBuildStructures(builds, buildDefinitions)
+    buildStructure, buildFields, buildTimeList, buildTimeListKeys = createBuildStructures(builds, buildDefinitions)
     releaseStructure, releaseFields = createReleaseStructures(releases, releaseDefinitions)
     gitStructure, gitFields, commitsInTotal = createGitStructures(repositories, theProject)
 
@@ -40,9 +40,11 @@ def main(organisationName, projectName, pat):
 
     writeFile(projectName, buildStructure, buildFields, 'build', 'w')
     writeFile(projectName, [], [], 'build')
+    writeFile(projectName, ['number of build definitions', len(buildDefinitions)], [], 'build')
+    writeFile(projectName, [], [], 'build')
     writeFile(projectName, ['number of builds', len(builds)], [], 'build')
     writeFile(projectName, [], [], 'build')
-    writeFile(projectName, ['number of build definitions', len(buildDefinitions)], [], 'build')
+    writeFile(projectName, buildTimeList, buildTimeListKeys, 'build')
 
 
     writeFile(projectName, releaseStructure, releaseFields, 'release', 'w')
@@ -110,9 +112,17 @@ def createBuildStructures(builds, listOfDefinitions):
 
     :return: A list of the keys used in the dictionaries, we cannot gaurentee what the keys will be called, so we return all the ones used so that the CSV file can have them as column titles.
     :rtype: <List> of type <String>
+
+    :return: A list of dictionaries containing the duration of builds
+    :rtype: <List> of type <Dictionary>
+
+    :return: A list of the keys used in the time dictionary
+    :rtype: <List> of type <String>
     """
     myList = []
     keys = []
+    buildTimeList = []
+    timeListKeys = []
     if len(listOfDefinitions) > 0:
         for definition in listOfDefinitions:
             # Add all definition names to the list
@@ -126,7 +136,8 @@ def createBuildStructures(builds, listOfDefinitions):
             'canceled': 0,
             'failed': 0,
             'none': 0,
-            'total': 0
+            'total': 0,
+            'avg duration': 0
             })
         # create list of keys, pulls keys from above dictionary
         for key in myList[0]:
@@ -134,6 +145,18 @@ def createBuildStructures(builds, listOfDefinitions):
 
     if len(builds) > 0:
         for item in builds:
+            # Get the duration of the build
+            duration = (item.finish_time - item.start_time).total_seconds()
+            # Add duration and queue duration to buildTimeList
+            buildTimeList.append({
+            'build id': item.id,
+            'definition': item.definition.name,
+            'result': item.result,
+            'queued at time': item.queue_time.strftime("%H:%M:%S"),
+            'queued at date': item.queue_time.strftime("%d/%m/%Y"),
+            'duration': duration,
+            'queue duration': (item.start_time - item.queue_time).total_seconds()
+            })
             # This may happen if the build hasnt finished yet
             if item.result is None:
                 continue
@@ -143,9 +166,20 @@ def createBuildStructures(builds, listOfDefinitions):
                     definitionDict[item.result] += 1
                     # We always want to increment the total
                     definitionDict['total'] += 1
+                    # Add duration to sum of all durations (this will be converted to an average later)
+                    definitionDict['avg duration'] += duration
                     # As we have found the definition in both, we wont again, so we can break to avoid pointless looping
                     break
-    return myList, keys
+        # create list of keys, pulls keys from above dictionary
+        for key in buildTimeList[0]:
+            timeListKeys.append(key)
+
+    if len(listOfDefinitions) > 0:
+        for definition in myList:
+            # Calculate average
+            definition['avg duration'] = definition['avg duration'] / definition['total']
+
+    return myList, keys, buildTimeList, timeListKeys
 
 
 def createReleaseStructures(releases, listOfDefinitions):

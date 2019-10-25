@@ -18,7 +18,7 @@ Stop:`deactivate`*
 
 
 ## What this code does
-- Outputs 5 .csv files
+- Outputs 4 .csv files
   - [project name]/[project name]-overview.csv
   - [project name]/project name]-git.csv
   - [project name]/project name]-build.csv
@@ -29,10 +29,10 @@ Stop:`deactivate`*
 - [x] Number of commits in total
 - [x] Number of builds
 - [x] Number of build definitions
-- [ ] Average time per build
+- [ ] ~~Average time per build~~ DO WE REALLY WANT THIS?
 - [x] Number of releases
 - [x] Number of release definitions
-- [ ] Average time per release deployment
+- [ ] ~~Average time per release deployment~~ DO WE REALLY WANT THIS?
 
 ### Git file contains...
 - [x] Number of repositories
@@ -47,8 +47,8 @@ Stop:`deactivate`*
 - [x] Number of build definitions
 - [x] Number of builds per definition
 - [x] Number of each type of outcome for a build per definition
-- [ ] Time per build (print build ids)
-- [ ] Average time per build
+- [x] Time per build (print build ids)
+- [x] Average time per build
 
 ### Release file contains...
 - [x] Number of release deployments
