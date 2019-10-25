@@ -26,7 +26,7 @@ def main(organisationName, projectName, pat):
     releaseDefinitions = theProject.getReleaseDefinitions()
 
     buildStructure, buildFields, buildTimeList, buildTimeListKeys = createBuildStructures(builds, buildDefinitions)
-    releaseStructure, releaseFields = createReleaseStructures(releases, releaseDefinitions)
+    releaseStructure, releaseFields, releaseTimeList, releaseTimeListKeys = createReleaseStructures(releases, releaseDefinitions)
     gitStructure, gitFields, commitsInTotal = createGitStructures(repositories, theProject)
 
 
@@ -49,9 +49,11 @@ def main(organisationName, projectName, pat):
 
     writeFile(projectName, releaseStructure, releaseFields, 'release', 'w')
     writeFile(projectName, [], [], 'release')
+    writeFile(projectName, ['number of release definitions', len(releaseDefinitions)], [], 'release')
+    writeFile(projectName, [], [], 'release')
     writeFile(projectName, ['number of releases', len(releases)], [], 'release')
     writeFile(projectName, [], [], 'release')
-    writeFile(projectName, ['number of release definitions', len(releaseDefinitions)], [], 'release')
+    writeFile(projectName, releaseTimeList, releaseTimeListKeys, 'release')
 
 
     writeFile(projectName, gitStructure, gitFields, 'git', 'w')
@@ -130,7 +132,7 @@ def createBuildStructures(builds, listOfDefinitions):
             #   We also set all of the possible results to 0
             # Hi future maintainer, the order of the keys here is the order that they appear in the csv file
             myList.append({
-            'name': definition.name,
+            'definition': definition.name,
             'succeeded': 0,
             'partiallySucceeded': 0,
             'canceled': 0,
@@ -145,9 +147,19 @@ def createBuildStructures(builds, listOfDefinitions):
 
     if len(builds) > 0:
         for item in builds:
-            # Get the duration of the build
-            duration = (item.finish_time - item.start_time).total_seconds()
-            # Add duration and queue duration to buildTimeList
+            # If the deployment has not started then the start_time and finish_time times will not have its timezone info set, but the queue_time time will
+            # This will cause a TypeError when trying to do maths with a non-timezone aware datetime and a timezone aware datetime
+            if item.start_time.tzinfo is None:
+                queueDuration = 0
+            else:
+                queueDuration = (item.start_time - item.queue_time).total_seconds()
+            # See comment above
+            if item.finish_time.tzinfo is None:
+                duration = 0
+            else:
+                # Get the duration of the build
+                duration = (item.finish_time - item.start_time).total_seconds()
+            # Add to buildTimeList
             buildTimeList.append({
             'build id': item.id,
             'definition': item.definition.name,
@@ -155,14 +167,14 @@ def createBuildStructures(builds, listOfDefinitions):
             'queued at time': item.queue_time.strftime("%H:%M:%S"),
             'queued at date': item.queue_time.strftime("%d/%m/%Y"),
             'duration': duration,
-            'queue duration': (item.start_time - item.queue_time).total_seconds()
+            'queue duration': queueDuration
             })
             # This may happen if the build hasnt finished yet
             if item.result is None:
                 continue
             for definitionDict in myList:
                 # If this is the same definition (in list to be filled and list to take things from)
-                if item.definition.name == definitionDict['name']:
+                if item.definition.name == definitionDict['definition']:
                     definitionDict[item.result] += 1
                     # We always want to increment the total
                     definitionDict['total'] += 1
@@ -177,7 +189,8 @@ def createBuildStructures(builds, listOfDefinitions):
     if len(listOfDefinitions) > 0:
         for definition in myList:
             # Calculate average
-            definition['avg duration'] = definition['avg duration'] / definition['total']
+            if not definition['total'] == 0:
+                definition['avg duration'] = definition['avg duration'] / definition['total']
 
     return myList, keys, buildTimeList, timeListKeys
 
@@ -196,14 +209,22 @@ def createReleaseStructures(releases, listOfDefinitions):
 
     :return: A list of the keys used in the dictionaries, we cannot gaurentee what the keys will be called, so we return all the ones used so that the CSV file can have them as column titles.
     :rtype: <List> of type <String>
+
+    :return: A list of dictionaries containing the duration of deployments
+    :rtype: <List> of type <Dictionary>
+
+    :return: A list of the keys used in the time dictionary
+    :rtype: <List> of type <String>
     """
     myList = []
     keys = []
+    releaseTimeList = []
+    timeListKeys = []
     if len(listOfDefinitions) > 0:
         for definition in listOfDefinitions:
             # Hi future maintainer, the order of the keys here is the order that they appear in the csv file
             myList.append({
-            'name': definition.name,
+            'definition': definition.name,
             'succeeded': 0,
             'partiallySucceeded': 0,
             'cancelled': 0,
@@ -212,7 +233,8 @@ def createReleaseStructures(releases, listOfDefinitions):
             'notDeployed': 0,
             'all': 0,
             'undefined': 0,
-            'total': 0
+            'total': 0,
+            'avg duration': 0
             })
         # create list of keys, pulls keys from above dictionary
         for key in myList[0]:
@@ -220,12 +242,45 @@ def createReleaseStructures(releases, listOfDefinitions):
 
     if len(releases) > 0:
         for item in releases:
+            # If the deployment has not started then the started_on and completed_on times will not have its timezone info set, but the queued_on time will
+            # This will cause a TypeError when trying to do maths with a non-timezone aware datetime and a timezone aware datetime
+            if item.started_on.tzinfo is None:
+                queueDuration = 0
+            else:
+                queueDuration = (item.started_on - item.queued_on).total_seconds()
+            # See comment above
+            if item.completed_on.tzinfo is None:
+                duration = 0
+            else:
+                # Get the duration of the deployment
+                duration = (item.completed_on - item.started_on).total_seconds()
+            # Add to releaseTimeList
+            releaseTimeList.append({
+            'deployment id': item.id,
+            'definition': item.release_definition.name,
+            'result': item.deployment_status,
+            'queued at time': item.queued_on.strftime("%H:%M:%S"),
+            'queued at date': item.queued_on.strftime("%d/%m/%Y"),
+            'duration': duration,
+            'queue duration': queueDuration
+            })
             for definitionDict in myList:
-                if item.release_definition.name == definitionDict['name']:
+                if item.release_definition.name == definitionDict['definition']:
                     definitionDict[item.deployment_status] += 1
                     definitionDict['total'] += 1
+                    definitionDict['avg duration'] += duration
                     break
-    return myList, keys
+        # create list of keys
+        for key in releaseTimeList[0]:
+            timeListKeys.append(key)
+
+    if len(listOfDefinitions) > 0:
+        for definition in myList:
+            # Calculate average
+            if not definition['total'] == 0:
+                definition['avg duration'] = definition['avg duration'] / definition['total']
+
+    return myList, keys, releaseTimeList, timeListKeys
 
 
 def createGitStructures(repositories, theProject):

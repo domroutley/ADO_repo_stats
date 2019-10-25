@@ -55,8 +55,8 @@ Stop:`deactivate`*
 - [x] Number of release definitions
 - [x] Number of deployments per definition
 - [x] Number of each type of outcome for a deployment per definition
-- [ ] Time per deployment (print deployment ids)
-- [ ] Average time per deployment
+- [x] Time per deployment (print deployment ids)
+- [x] Average time per deployment
 
 #TODO
 - [ ] Rewrite all calls to the API to use direct calls
