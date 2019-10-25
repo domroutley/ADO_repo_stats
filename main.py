@@ -39,17 +39,23 @@ def main(organisationName, projectName, pat):
 
 
     writeFile(projectName, buildStructure, buildFields, 'build', 'w')
+    writeFile(projectName, [], [], 'build')
     writeFile(projectName, ['number of builds', len(builds)], [], 'build')
+    writeFile(projectName, [], [], 'build')
     writeFile(projectName, ['number of build definitions', len(buildDefinitions)], [], 'build')
 
 
     writeFile(projectName, releaseStructure, releaseFields, 'release', 'w')
+    writeFile(projectName, [], [], 'release')
     writeFile(projectName, ['number of releases', len(releases)], [], 'release')
+    writeFile(projectName, [], [], 'release')
     writeFile(projectName, ['number of release definitions', len(releaseDefinitions)], [], 'release')
 
 
     writeFile(projectName, gitStructure, gitFields, 'git', 'w')
+    writeFile(projectName, [], [], 'git')
     writeFile(projectName, ['number of repositories', len(repositories)], [], 'git')
+    writeFile(projectName, [], [], 'git')
     writeFile(projectName, ['number of commits in total', commitsInTotal], [], 'git')
 
 
