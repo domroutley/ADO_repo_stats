@@ -1,5 +1,6 @@
 from azure.devops.connection import Connection
 from msrest.authentication import BasicAuthentication
+import requests, json
 
 class Project:
 
@@ -19,7 +20,7 @@ class Project:
         :rtype: no value
         """
         self.org = organisation
-        pn = projectName
+        self.projectName = projectName
         self.pat = personalAccessToken
 
         organizationUrl = 'https://dev.azure.com/' + self.org
@@ -33,21 +34,20 @@ class Project:
 
         # Get the first page of projects
         getProjectsResponse = coreClient.get_projects()
-        index = 0
         while getProjectsResponse is not None:
             for project in getProjectsResponse.value:
-                if (project.name == pn):
+                if (project.name == self.projectName):
                     self.project = project
                     # Stop grabbing stuff
                     getProjectsResponse.continuation_token = None
-                    break
-                index += 1
+                    return
             if getProjectsResponse.continuation_token is not None and getProjectsResponse.continuation_token != "":
                 # Get the next page of projects
                 getProjectsResponse = coreClient.get_projects(continuation_token=getProjectsResponse.continuation_token)
             else:
                 # All projects have been retrieved
                 getProjectsResponse = None
+                raise Exception('Project {} was not found.'.format(self.projectName))
 
 
     def getRepositories(self):
@@ -56,11 +56,28 @@ class Project:
         :return: A list of repositories
         :rtype: <List> of type <class 'azure.devops.v5_1.git.models.GitRepository'>
         """
-        from azure.devops.released.git import GitClient
 
         gitClient = self.connection.clients.get_git_client()
-        repos = gitClient.get_repositories(self.project.name)
-        return repos
+        return gitClient.get_repositories(self.project.name)
+
+
+    def getRepositoryCommits(self, repo, branch=''):
+        """Return the commits for a repository.
+        ..:note: This function uses a direct call to the API as opposed to using the python wrapper module, this is because in v5.1 of the python wrapper there is no way to currently return the data we require
+
+        :param repo: A repository object to get the stats for
+        :repo type: <class 'azure.devops.v5_1.git.models.GitRepository'>
+
+        :param branch: What branch to target, blank for all
+        :branch type: 
+
+        :return: All of the commits for that repository as a dictionary
+        :rtype: <Dictionary>
+        """
+        if branch is not None:
+            branch = 'searchCriteria.itemVersion.version={}&'.format(branch)
+        response = requests.get('https://dev.azure.com/{}/{}/_apis/git/repositories/{}/commits?searchCriteria.$top=10000&{}api-version=5.1'.format(self.org, self.projectName, repo.id, branch), auth=requests.auth.HTTPBasicAuth('', self.pat))
+        return json.loads(response.text)
 
 
     def getBuilds(self):
@@ -93,7 +110,6 @@ class Project:
         :return: A list of either builds or build definitions
         :rtype: <List> of type <class 'azure.devops.v5_1.build.models.BuildDefinitionReference'> OR type <class 'azure.devops.v5_1.build.models.Build'>
         """
-        from azure.devops.released.build import BuildClient
 
         buildClient = self.connection.clients.get_build_client()
         if mode == "definitions":
@@ -143,13 +159,12 @@ class Project:
         :return: A list of releases or release definitions
         :rtype: <List> of type <class 'azure.devops.v5_1.release.models.ReleaseDefinition'> OR type <class 'azure.devops.v5_1.release.models.Release'>
         """
-        from azure.devops.released.release import ReleaseClient
 
         releaseClient = self.connection.clients.get_release_client()
         if mode == "definitions":
             releases = releaseClient.get_release_definitions(self.project.name)
         elif mode == "releases":
-            releases = releaseClient.get_releases(self.project.name)
+            releases = releaseClient.get_deployments(self.project.name)
         listOfReleases = releases.value
 
         # While there is more to get, get them and extend the current list
@@ -157,7 +172,7 @@ class Project:
             if mode == "definitions":
                 releases = releaseClient.get_release_definitions(self.project.name, continuation_token=releases.continuation_token)
             elif mode == "releases":
-                releases = releaseClient.get_releases(self.project.name, continuation_token=releases.continuation_token)
+                releases = releaseClient.get_deployments(self.project.name, continuation_token=releases.continuation_token)
             listOfReleases.extend(releases.value)
 
         return listOfReleases

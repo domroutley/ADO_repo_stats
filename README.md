@@ -8,36 +8,55 @@ Test:`which python3`
 Stop:`deactivate`*
 
 ## To run
-(Make sure you are using Python 3)
 - Clone repo  
   `git clone https://github.com/domroutley/ADO_repo_stats.git`
 - Install required packages  
   `pip install -r requirements.txt`
 - Change the organisation and project variables in the `target.py` file
-- Run either `printToScreen` or `exportToCSV` from the examples folder to see the output.
-  - You will need a file called `token` containing a PAT and to change the initial call to the class to have your organisation and project.
+- Create a `token` file in the same directory and put your PAT for the target project in it
+- Run the `main.py` file (using python 3)
 
 
-## TODO
-### Git
-- ~~Number of repositories~~
+## What this code does
+- Outputs 4 .csv files
+  - [project name]/[project name]-overview.csv
+  - [project name]/project name]-git.csv
+  - [project name]/project name]-build.csv
+  - [project name]/project name]-release.csv
 
-### Builds
-- ~~Number of builds~~
-- ~~Number of build definitions~~
-- ~~Number of builds per definition~~
-- ~~Number of successful builds per definition~~
-- ~~Number of failed builds per definition~~
-- ~~Number of cancelled builds per definition~~
+### Overview file contains...
+- [x] Number of repositories
+- [x] Number of commits in total
+- [x] Number of builds
+- [x] Number of build definitions
+- [ ] ~~Average time per build~~ DO WE REALLY WANT THIS?
+- [x] Number of releases
+- [x] Number of release definitions
+- [ ] ~~Average time per release deployment~~ DO WE REALLY WANT THIS?
 
+### Git file contains...
+- [x] Number of repositories
+- [x] Default branch of repository
+- [x] Number of commits in total (for project)
+- [x] Number of commits per repo
+- [ ] Number of commits not in master (per repo)
+- [ ] Number of lines in master per repo (unknown)
 
-### Releases
-- ~~Number of releases~~
-- ~~Number of release definitions~~
-- ~~Number of releases per definition and their status~~
-- Release status to be of class deployment
+### Build file contains...
+- [x] Number of builds
+- [x] Number of build definitions
+- [x] Number of builds per definition
+- [x] Number of each type of outcome for a build per definition
+- [x] Time per build (print build ids)
+- [x] Average time per build
 
+### Release file contains...
+- [x] Number of release deployments
+- [x] Number of release definitions
+- [x] Number of deployments per definition
+- [x] Number of each type of outcome for a deployment per definition
+- [x] Time per deployment (print deployment ids)
+- [x] Average time per deployment
 
-### Tests (on hold)
-- Number of tests passed
-- Number of tests failed
+#TODO
+- [ ] Rewrite all calls to the API to use direct calls
