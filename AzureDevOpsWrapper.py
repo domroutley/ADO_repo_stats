@@ -23,6 +23,8 @@ class Project:
         self.projectName = projectName
         self.pat = personalAccessToken
 
+        self.base_url = 'https://dev.azure.com/{}/{}/_apis/'.format(organisation, projectName)
+
         organizationUrl = 'https://dev.azure.com/' + self.org
 
         # Create a connection to the org
@@ -54,11 +56,10 @@ class Project:
         """Get the list of repositories from the project.
 
         :return: A list of repositories
-        :rtype: <List> of type <class 'azure.devops.v5_1.git.models.GitRepository'>
+        :rtype: <Dictionary>
         """
-
-        gitClient = self.connection.clients.get_git_client()
-        return gitClient.get_repositories(self.project.name)
+        response = requests.get('{}git/repositories?api-version=5.1'.format(self.base_url), auth=requests.auth.HTTPBasicAuth('', self.pat))
+        return json.loads(response.text)
 
 
     def getRepositoryCommits(self, repo, branch=''):
@@ -69,14 +70,14 @@ class Project:
         :repo type: <class 'azure.devops.v5_1.git.models.GitRepository'>
 
         :param branch: What branch to target, blank for all
-        :branch type: 
+        :branch type:
 
         :return: All of the commits for that repository as a dictionary
         :rtype: <Dictionary>
         """
         if branch is not None:
             branch = 'searchCriteria.itemVersion.version={}&'.format(branch)
-        response = requests.get('https://dev.azure.com/{}/{}/_apis/git/repositories/{}/commits?searchCriteria.$top=10000&{}api-version=5.1'.format(self.org, self.projectName, repo.id, branch), auth=requests.auth.HTTPBasicAuth('', self.pat))
+        response = requests.get('{}git/repositories/{}/commits?searchCriteria.$top=10000&{}api-version=5.1'.format(self.base_url, repo['id'], branch), auth=requests.auth.HTTPBasicAuth('', self.pat))
         return json.loads(response.text)
 
 

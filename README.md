@@ -1,6 +1,6 @@
 # Azure DevOps repository statistics python module
 
-*It is strongly suggested that you use a virtual python environment.  
+*It is strongly suggested that you use a virtual python environment and a python version >=3.6  
 Install:`python3 -m venv .venv`  
 Run:`source .venv/bin/activate`  
 Test:`which python3`  
@@ -14,7 +14,7 @@ Stop:`deactivate`*
   `pip install -r requirements.txt`
 - Change the organisation and project variables in the `target.py` file
 - Create a `token` file in the same directory and put your PAT for the target project in it
-- Run the `main.py` file (using python 3)
+- Run the `main.py` file (using python 3.6+)
 
 
 ## What this code does

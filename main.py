@@ -34,7 +34,7 @@ def main(organisationName, projectName, pat):
     writeFile(projectName, ['number of build definitions', len(buildDefinitions)], [], 'overview')
     writeFile(projectName, ['number of releases', len(releases)], [], 'overview')
     writeFile(projectName, ['number of release definitions', len(releaseDefinitions)], [], 'overview')
-    writeFile(projectName, ['number of repositories', len(repositories)], [], 'overview')
+    writeFile(projectName, ['number of repositories', repositories['count']], [], 'overview')
     writeFile(projectName, ['number of commits', commitsInTotal], [], 'overview')
 
 
@@ -58,7 +58,7 @@ def main(organisationName, projectName, pat):
 
     writeFile(projectName, gitStructure, gitFields, 'git', 'w')
     writeFile(projectName, [], [], 'git')
-    writeFile(projectName, ['number of repositories', len(repositories)], [], 'git')
+    writeFile(projectName, ['number of repositories', repositories['count']], [], 'git')
     writeFile(projectName, [], [], 'git')
     writeFile(projectName, ['number of commits in total', commitsInTotal], [], 'git')
 
@@ -286,8 +286,8 @@ def createReleaseStructures(releases, listOfDefinitions):
 def createGitStructures(repositories, theProject):
     """Creates a list of dictionaries containing data about the repositories.
 
-    :param repositories: A List of repository objects
-    :repositories type: <List> of type <class 'azure.devops.v5_1.git.models.GitRepository'>
+    :param repositories: A List of repositories
+    :repositories type: <List>
 
     :param theProject: The AzureDevOpsWrapper Project
     :theProject type: <class 'AzureDevOpsWrapper.Project'>
@@ -302,11 +302,11 @@ def createGitStructures(repositories, theProject):
     myList = []
     commitsInTotal = 0
     if len(repositories) > 0:
-        for repository in repositories:
+        for repository in repositories['value']:
             additions = deletions = editions = 0
             # If the repo is not totally empty
-            if repository.default_branch is not None:
-                defaultBranch = repository.default_branch[11:]
+            if 'defaultBranch' in repository:
+                defaultBranch = repository['defaultBranch'][11:]
                 repositoryCommits = theProject.getRepositoryCommits(repository)
                 defaultBranchCommits = theProject.getRepositoryCommits(repository, branch=defaultBranch)
                 for commit in repositoryCommits['value']:
@@ -320,7 +320,7 @@ def createGitStructures(repositories, theProject):
                 repositoryCommits = {'count': 0}
 
             myList.append({
-            'repository': repository.name,
+            'repository': repository['name'],
             'default branch': defaultBranch,
             'number of commits (default branch)': defaultBranchCommits['count'],
             'number of commits (all branches)': repositoryCommits['count'],
