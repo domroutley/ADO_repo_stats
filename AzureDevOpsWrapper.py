@@ -133,10 +133,10 @@ class Project:
         :return: A dictionary of releases
         :rtype: <Dictionary>
         """
-        rawResponse = requests.get('{}release/deployments?statusfilter=all&api-version=5.1'.format(self.release_base_url), auth=requests.auth.HTTPBasicAuth('', self.pat))
+        rawResponse = requests.get('{}release/deployments?api-version=5.1'.format(self.release_base_url), auth=requests.auth.HTTPBasicAuth('', self.pat))
         allReleases = json.loads(rawResponse.text)
         while 'x-ms-continuationtoken' in rawResponse.headers:
-            rawResponse = requests.get('{}release/deployments?statusfilter=all&continuationtoken={}&api-version=5.1'.format(self.release_base_url, rawResponse.headers['x-ms-continuationtoken']), auth=requests.auth.HTTPBasicAuth('', self.pat))
+            rawResponse = requests.get('{}release/deployments?continuationtoken={}&api-version=5.1'.format(self.release_base_url, rawResponse.headers['x-ms-continuationtoken']), auth=requests.auth.HTTPBasicAuth('', self.pat))
             response = json.loads(rawResponse.text)
             allReleases['count'] += response['count']
             allReleases['value'].extend(response['value'])
@@ -146,38 +146,16 @@ class Project:
 
     def getReleaseDefinitions(self):
         """Get the list of release definitions from the project.
-        .. notes:: This method is a wrapper that simply calls the releases method with the mode argument set to "definitions"
 
-        :return: A list of release definitions
-        :rtype: <List> of type <class 'azure.devops.v5_1.release.models.ReleaseDefinition'>
+        :return: A dictionary of release definitions
+        :rtype: <Dictionary>
         """
-        return self.releases("definitions")
+        rawResponse = requests.get('{}release/definitions?api-version=5.1'.format(self.release_base_url), auth=requests.auth.HTTPBasicAuth('', self.pat))
+        allDefinitions = json.loads(rawResponse.text)
+        while 'x-ms-continuationtoken' in rawResponse.headers:
+            rawResponse = requests.get('{}release/definitions?continuationtoken={}&api-version=5.1'.format(self.release_base_url, rawResponse.headers['x-ms-continuationtoken']), auth=requests.auth.HTTPBasicAuth('', self.pat))
+            response = json.loads(rawResponse.text)
+            allDefinitions['count'] += response['count']
+            allDefinitions['value'].extend(response['value'])
 
-
-    def releases(self, mode):
-        """Use the release client to get releases or release definitions from the ADO API.
-        .. notes:: This method is intented to be used by the wrapper functions.
-
-        :param mode: The type of object to return, possible options: 'definitions' 'releases'
-        :mode type: <String>
-
-        :return: A list of releases or release definitions
-        :rtype: <List> of type <class 'azure.devops.v5_1.release.models.ReleaseDefinition'> OR type <class 'azure.devops.v5_1.release.models.Release'>
-        """
-
-        releaseClient = self.connection.clients.get_release_client()
-        if mode == "definitions":
-            releases = releaseClient.get_release_definitions(self.project.name)
-        elif mode == "releases":
-            releases = releaseClient.get_deployments(self.project.name)
-        listOfReleases = releases.value
-
-        # While there is more to get, get them and extend the current list
-        while releases.continuation_token is not None:
-            if mode == "definitions":
-                releases = releaseClient.get_release_definitions(self.project.name, continuation_token=releases.continuation_token)
-            elif mode == "releases":
-                releases = releaseClient.get_deployments(self.project.name, continuation_token=releases.continuation_token)
-            listOfReleases.extend(releases.value)
-
-        return listOfReleases
+        return allDefinitions

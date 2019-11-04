@@ -33,7 +33,7 @@ def main(organisationName, projectName, pat):
     writeFile(projectName, ['number of builds', len(builds)], [], 'overview', 'w')
     writeFile(projectName, ['number of build definitions', buildDefinitions['count']], [], 'overview')
     writeFile(projectName, ['number of releases', releases['count']], [], 'overview')
-    writeFile(projectName, ['number of release definitions', len(releaseDefinitions)], [], 'overview')
+    writeFile(projectName, ['number of release definitions', releaseDefinitions['count']], [], 'overview')
     writeFile(projectName, ['number of repositories', repositories['count']], [], 'overview')
     writeFile(projectName, ['number of commits', commitsInTotal], [], 'overview')
 
@@ -49,7 +49,7 @@ def main(organisationName, projectName, pat):
 
     writeFile(projectName, releaseStructure, releaseFields, 'release', 'w')
     writeFile(projectName, [], [], 'release')
-    writeFile(projectName, ['number of release definitions', len(releaseDefinitions)], [], 'release')
+    writeFile(projectName, ['number of release definitions', releaseDefinitions['count']], [], 'release')
     writeFile(projectName, [], [], 'release')
     writeFile(projectName, ['number of releases', releases['count']], [], 'release')
     writeFile(projectName, [], [], 'release')
@@ -201,8 +201,8 @@ def createReleaseStructures(releases, listOfDefinitions):
     :param releases: A dictionary of releases to be counted in the dictionaries
     :releases type: <Dictionary>
 
-    :param listOfDefinitions: A list of release definition objects to be added as dictionaries (name only)
-    :listOfDefinitions type: <List> of type <class 'azure.devops.v5_1.release.models.ReleaseDefinition'>
+    :param listOfDefinitions: A dictionary of release definitions to be added as dictionaries (name only)
+    :listOfDefinitions type: <Dictionary>
 
     :return: A list of dictionaries containing data about the releases in a release definition
     :rtype: <List> of type <Dictionary>
@@ -220,11 +220,11 @@ def createReleaseStructures(releases, listOfDefinitions):
     keys = []
     releaseTimeList = []
     timeListKeys = []
-    if len(listOfDefinitions) > 0:
-        for definition in listOfDefinitions:
+    if listOfDefinitions['count'] > 0:
+        for definition in listOfDefinitions['value']:
             # Hi future maintainer, the order of the keys here is the order that they appear in the csv file
             myList.append({
-            'definition': definition.name,
+            'definition': definition['name'],
             'succeeded': 0,
             'partiallySucceeded': 0,
             'cancelled': 0,
@@ -245,12 +245,12 @@ def createReleaseStructures(releases, listOfDefinitions):
             if not 'startedOn' in item:
                 queueDuration = 0
             else:
-                queueDuration = (item['startedOn'] - item['queuedOn']).total_seconds()
+                queueDuration = (item['startedOn'] - item['queuedOn'])
             if not 'completedOn' in item:
                 duration = 0
             else:
                 # Get the duration of the deployment
-                duration = (item['completedOn'] - item['startedOn']).total_seconds()
+                duration = (item['completedOn'] - item['startedOn'])
             # Add to releaseTimeList
             releaseTimeList.append({
             'deployment id': item['id'],
@@ -270,7 +270,7 @@ def createReleaseStructures(releases, listOfDefinitions):
         for key in releaseTimeList[0]:
             timeListKeys.append(key)
 
-    if len(listOfDefinitions) > 0:
+    if listOfDefinitions['count'] > 0:
         for definition in myList:
             # Calculate average
             if not definition['total'] == 0:
