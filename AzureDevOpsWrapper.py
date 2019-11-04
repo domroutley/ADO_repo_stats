@@ -115,7 +115,7 @@ class Project:
         :return: A list of builds
         :rtype: <List> of type <class 'azure.devops.v5_1.build.models.Build'>
         """
-
+        buildClient = self.connection.clients.get_build_client()
         builds = buildClient.get_builds(self.project.name)
         listOfBuilds = builds.value
 
