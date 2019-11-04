@@ -32,7 +32,7 @@ def main(organisationName, projectName, pat):
     gitStructure, gitFields, commitsInTotal = createGitStructures(repositories, theProject)
 
 
-    writeFile(projectName, ['number of builds', len(builds)], [], 'overview', 'w')
+    writeFile(projectName, ['number of builds', builds['count']], [], 'overview', 'w')
     writeFile(projectName, ['number of build definitions', buildDefinitions['count']], [], 'overview')
     writeFile(projectName, ['number of releases', releases['count']], [], 'overview')
     writeFile(projectName, ['number of release definitions', releaseDefinitions['count']], [], 'overview')
@@ -44,7 +44,7 @@ def main(organisationName, projectName, pat):
     writeFile(projectName, [], [], 'build')
     writeFile(projectName, ['number of build definitions', buildDefinitions['count']], [], 'build')
     writeFile(projectName, [], [], 'build')
-    writeFile(projectName, ['number of builds', len(builds)], [], 'build')
+    writeFile(projectName, ['number of builds', builds['count']], [], 'build')
     writeFile(projectName, [], [], 'build')
     writeFile(projectName, buildTimeList, buildTimeListKeys, 'build')
 
@@ -147,37 +147,37 @@ def createBuildStructures(builds, listOfDefinitions):
         for key in myList[0]:
             keys.append(key)
 
-    if len(builds) > 0:
-        for item in builds:
+    if builds['count'] > 0:
+        for item in builds['value']:
             # If the deployment has not started then the start_time and finish_time times will not have its timezone info set, but the queue_time time will
             # This will cause a TypeError when trying to do maths with a non-timezone aware datetime and a timezone aware datetime
-            if item.start_time.tzinfo is None:
+            if parse(item['startTime']).tzinfo is None:
                 queueDuration = 0
             else:
-                queueDuration = (item.start_time - item.queue_time).total_seconds()
+                queueDuration = (parse(item['startTime']) - parse(item['queueTime'])).total_seconds()
             # See comment above
-            if item.finish_time.tzinfo is None:
+            if parse(item['finishTime']).tzinfo is None:
                 duration = 0
             else:
                 # Get the duration of the build
-                duration = (item.finish_time - item.start_time).total_seconds()
+                duration = (parse(item['finishTime']) - parse(item['startTime'])).total_seconds()
             # Add to buildTimeList
             buildTimeList.append({
-            'build id': item.id,
-            'definition': item.definition.name,
-            'result': item.result,
-            'queued at time': item.queue_time.strftime("%H:%M:%S"),
-            'queued at date': item.queue_time.strftime("%d/%m/%Y"),
+            'build id': item['id'],
+            'definition': item['definition']['name'],
+            'result': item['result'],
+            'queued at time': parse(item['queueTime']).date(),
+            'queued at date': parse(item['queueTime']).time(),
             'duration': duration,
             'queue duration': queueDuration
             })
             # This may happen if the build hasnt finished yet
-            if item.result is None:
+            if item['result'] is None:
                 continue
             for definitionDict in myList:
                 # If this is the same definition (in list to be filled and list to take things from)
-                if item.definition.name == definitionDict['definition']:
-                    definitionDict[item.result] += 1
+                if item['definition']['name'] == definitionDict['definition']:
+                    definitionDict[item['result']] += 1
                     # We always want to increment the total
                     definitionDict['total'] += 1
                     # Add duration to sum of all durations (this will be converted to an average later)
