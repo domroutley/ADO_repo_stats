@@ -19,10 +19,10 @@ def main(organisationName, projectName, pat):
 
     theProject = AzureDevOpsWrapper.Project(organisationName, projectName, pat)
 
-    # repositories = theProject.getRepositories()
-    # builds = theProject.getBuilds()
+    repositories = theProject.getRepositories()
+    builds = theProject.getBuilds()
     buildDefinitions = theProject.getBuildDefinitions()
-    releases = theProject.getReleases()
+    releases = theProject.getDeployments()
     releaseDefinitions = theProject.getReleaseDefinitions()
 
     buildStructure, buildFields, buildTimeList, buildTimeListKeys = createBuildStructures(builds, buildDefinitions)
@@ -32,7 +32,7 @@ def main(organisationName, projectName, pat):
 
     writeFile(projectName, ['number of builds', len(builds)], [], 'overview', 'w')
     writeFile(projectName, ['number of build definitions', buildDefinitions['count']], [], 'overview')
-    writeFile(projectName, ['number of releases', len(releases)], [], 'overview')
+    writeFile(projectName, ['number of releases', releases['count']], [], 'overview')
     writeFile(projectName, ['number of release definitions', len(releaseDefinitions)], [], 'overview')
     writeFile(projectName, ['number of repositories', repositories['count']], [], 'overview')
     writeFile(projectName, ['number of commits', commitsInTotal], [], 'overview')
@@ -51,7 +51,7 @@ def main(organisationName, projectName, pat):
     writeFile(projectName, [], [], 'release')
     writeFile(projectName, ['number of release definitions', len(releaseDefinitions)], [], 'release')
     writeFile(projectName, [], [], 'release')
-    writeFile(projectName, ['number of releases', len(releases)], [], 'release')
+    writeFile(projectName, ['number of releases', releases['count']], [], 'release')
     writeFile(projectName, [], [], 'release')
     writeFile(projectName, releaseTimeList, releaseTimeListKeys, 'release')
 
@@ -198,8 +198,8 @@ def createBuildStructures(builds, listOfDefinitions):
 def createReleaseStructures(releases, listOfDefinitions):
     """Creates a list of dictionaries containing data about the releases in a release definition.
 
-    :param releases: A list of release objects to be counted in the dictionaries
-    :releases type: <List> of type <class 'azure.devops.v5_1.release.models.Release'>
+    :param releases: A dictionary of releases to be counted in the dictionaries
+    :releases type: <Dictionary>
 
     :param listOfDefinitions: A list of release definition objects to be added as dictionaries (name only)
     :listOfDefinitions type: <List> of type <class 'azure.devops.v5_1.release.models.ReleaseDefinition'>
@@ -240,33 +240,29 @@ def createReleaseStructures(releases, listOfDefinitions):
         for key in myList[0]:
             keys.append(key)
 
-    if len(releases) > 0:
-        for item in releases:
-            # If the deployment has not started then the started_on and completed_on times will not have its timezone info set, but the queued_on time will
-            # This will cause a TypeError when trying to do maths with a non-timezone aware datetime and a timezone aware datetime
-            if item.started_on.tzinfo is None:
+    if releases['count'] > 0:
+        for item in releases['value']:
+            if not 'startedOn' in item:
                 queueDuration = 0
             else:
-                queueDuration = (item.started_on - item.queued_on).total_seconds()
-            # See comment above
-            if item.completed_on.tzinfo is None:
+                queueDuration = (item['startedOn'] - item['queuedOn']).total_seconds()
+            if not 'completedOn' in item:
                 duration = 0
             else:
                 # Get the duration of the deployment
-                duration = (item.completed_on - item.started_on).total_seconds()
+                duration = (item['completedOn'] - item['startedOn']).total_seconds()
             # Add to releaseTimeList
             releaseTimeList.append({
-            'deployment id': item.id,
-            'definition': item.release_definition.name,
-            'result': item.deployment_status,
-            'queued at time': item.queued_on.strftime("%H:%M:%S"),
-            'queued at date': item.queued_on.strftime("%d/%m/%Y"),
+            'deployment id': item['id'],
+            'definition': item['releaseDefinition']['name'],
+            'result': item['deploymentStatus'],
+            'queued at': item['queuedOn'],
             'duration': duration,
             'queue duration': queueDuration
             })
             for definitionDict in myList:
-                if item.release_definition.name == definitionDict['definition']:
-                    definitionDict[item.deployment_status] += 1
+                if item['releaseDefinition']['name'] == definitionDict['definition']:
+                    definitionDict[item['deploymentStatus']] += 1
                     definitionDict['total'] += 1
                     definitionDict['avg duration'] += duration
                     break

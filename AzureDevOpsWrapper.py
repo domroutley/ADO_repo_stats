@@ -24,6 +24,7 @@ class Project:
         self.pat = personalAccessToken
 
         self.base_url = 'https://dev.azure.com/{}/{}/_apis/'.format(organisation, projectName)
+        self.release_base_url = 'https://vsrm.dev.azure.com/{}/{}/_apis/'.format(organisation, projectName)
 
         organizationUrl = 'https://dev.azure.com/' + self.org
 
@@ -126,14 +127,21 @@ class Project:
         return listOfBuilds
 
 
-    def getReleases(self):
-        """Get the list of releases from the project.
-        .. notes:: This method is a wrapper that simply calls the releases method with the mode argument set to "releases"
+    def getDeployments(self):
+        """Get the list of release deployments from the project.
 
-        :return: A list of releases
-        :rtype: <List> of type <class 'azure.devops.v5_1.release.models.Release'>
+        :return: A dictionary of releases
+        :rtype: <Dictionary>
         """
-        return self.releases("releases")
+        rawResponse = requests.get('{}release/deployments?statusfilter=all&api-version=5.1'.format(self.release_base_url), auth=requests.auth.HTTPBasicAuth('', self.pat))
+        allReleases = json.loads(rawResponse.text)
+        while 'x-ms-continuationtoken' in rawResponse.headers:
+            rawResponse = requests.get('{}release/deployments?statusfilter=all&continuationtoken={}&api-version=5.1'.format(self.release_base_url, rawResponse.headers['x-ms-continuationtoken']), auth=requests.auth.HTTPBasicAuth('', self.pat))
+            response = json.loads(rawResponse.text)
+            allReleases['count'] += response['count']
+            allReleases['value'].extend(response['value'])
+
+        return allReleases
 
 
     def getReleaseDefinitions(self):
