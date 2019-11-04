@@ -90,12 +90,10 @@ class Project:
         rawResponse = requests.get('{}build/builds?statusFilter=all&api-version=5.1'.format(self.base_url), auth=requests.auth.HTTPBasicAuth('', self.pat))
         allBuilds = json.loads(rawResponse.text)
         while 'x-ms-continuationtoken' in rawResponse.headers:
-            print('foobar')
             rawResponse = requests.get('{}build/builds?continuationToken={}&statusFilter=all&api-version=5.1'.format(self.base_url, token), auth=requests.auth.HTTPBasicAuth('', self.pat))
             response = json.loads(rawResponse.text)
             allBuilds['count'] += response['count']
-            for build in response['value']:
-                allBuilds['value'].append(build)
+            allBuilds['value'].extend(response['value'])
 
         return allBuilds
 
