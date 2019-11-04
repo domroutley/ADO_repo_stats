@@ -83,12 +83,21 @@ class Project:
 
     def getBuilds(self):
         """Get the list of builds from the project.
-        .. notes:: This method is a wrapper that simply calls the builds method with the mode argument set to "builds"
 
-        :return: A list of builds
-        :rtype: <List> of type <class 'azure.devops.v5_1.build.models.Build'>
+        :return: A dictionary of all builds
+        :rtype: <Dictionary>
         """
-        return self.builds("builds")
+        rawResponse = requests.get('{}build/builds?statusFilter=all&api-version=5.1'.format(self.base_url), auth=requests.auth.HTTPBasicAuth('', self.pat))
+        allBuilds = json.loads(rawResponse.text)
+        while 'x-ms-continuationtoken' in rawResponse.headers:
+            print('foobar')
+            rawResponse = requests.get('{}build/builds?continuationToken={}&statusFilter=all&api-version=5.1'.format(self.base_url, token), auth=requests.auth.HTTPBasicAuth('', self.pat))
+            response = json.loads(rawResponse.text)
+            allBuilds['count'] += response['count']
+            for build in response['value']:
+                allBuilds['value'].append(build)
+
+        return allBuilds
 
 
     def getBuildDefinitions(self):
