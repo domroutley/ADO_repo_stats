@@ -1,6 +1,8 @@
 import AzureDevOpsWrapper
 
-import csv, os, json
+import csv, os, json, datetime
+# import pprint
+from dateutil.parser import parse
 
 def main(organisationName, projectName, pat):
     """Creates five csv files containing raw statistics about the given project.
@@ -242,30 +244,39 @@ def createReleaseStructures(releases, listOfDefinitions):
 
     if releases['count'] > 0:
         for item in releases['value']:
-            if not 'startedOn' in item:
+            # If the deployment has not started then the started_on and completed_on times will not have its timezone info set, but the queued_on time will
+            # This will cause a TypeError when trying to do maths with a non-timezone aware datetime and a timezone aware datetime
+            if parse(item['startedOn']).tzinfo is None:
                 queueDuration = 0
             else:
-                queueDuration = (item['startedOn'] - item['queuedOn'])
-            if not 'completedOn' in item:
+                # Get duration of the queue
+                queueDuration = (parse(item['startedOn']) - parse(item['queuedOn'])).total_seconds()
+
+            # See above comment, also if completedOn has not been set, then we dont care if startedOn has
+            if parse(item['completedOn']).tzinfo is None:
                 duration = 0
             else:
                 # Get the duration of the deployment
-                duration = (item['completedOn'] - item['startedOn'])
+                duration = (parse(item['completedOn']) - parse(item['startedOn'])).total_seconds()
+
             # Add to releaseTimeList
             releaseTimeList.append({
             'deployment id': item['id'],
             'definition': item['releaseDefinition']['name'],
             'result': item['deploymentStatus'],
-            'queued at': item['queuedOn'],
+            'queued at date': parse(item['queuedOn']).date(),
+            'queued at time': parse(item['queuedOn']).time(),
             'duration': duration,
             'queue duration': queueDuration
             })
+
             for definitionDict in myList:
                 if item['releaseDefinition']['name'] == definitionDict['definition']:
                     definitionDict[item['deploymentStatus']] += 1
                     definitionDict['total'] += 1
                     definitionDict['avg duration'] += duration
                     break
+
         # create list of keys
         for key in releaseTimeList[0]:
             timeListKeys.append(key)
