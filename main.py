@@ -19,8 +19,8 @@ def main(organisationName, projectName, pat):
 
     theProject = AzureDevOpsWrapper.Project(organisationName, projectName, pat)
 
-    repositories = theProject.getRepositories()
-    builds = theProject.getBuilds()
+    # repositories = theProject.getRepositories()
+    # builds = theProject.getBuilds()
     buildDefinitions = theProject.getBuildDefinitions()
     releases = theProject.getReleases()
     releaseDefinitions = theProject.getReleaseDefinitions()
@@ -31,7 +31,7 @@ def main(organisationName, projectName, pat):
 
 
     writeFile(projectName, ['number of builds', len(builds)], [], 'overview', 'w')
-    writeFile(projectName, ['number of build definitions', len(buildDefinitions)], [], 'overview')
+    writeFile(projectName, ['number of build definitions', buildDefinitions['count']], [], 'overview')
     writeFile(projectName, ['number of releases', len(releases)], [], 'overview')
     writeFile(projectName, ['number of release definitions', len(releaseDefinitions)], [], 'overview')
     writeFile(projectName, ['number of repositories', repositories['count']], [], 'overview')
@@ -40,7 +40,7 @@ def main(organisationName, projectName, pat):
 
     writeFile(projectName, buildStructure, buildFields, 'build', 'w')
     writeFile(projectName, [], [], 'build')
-    writeFile(projectName, ['number of build definitions', len(buildDefinitions)], [], 'build')
+    writeFile(projectName, ['number of build definitions', buildDefinitions['count']], [], 'build')
     writeFile(projectName, [], [], 'build')
     writeFile(projectName, ['number of builds', len(builds)], [], 'build')
     writeFile(projectName, [], [], 'build')
@@ -106,8 +106,8 @@ def createBuildStructures(builds, listOfDefinitions):
     :param builds: A list of build objects to be counted in the dictionaries
     :builds type: <List> of type <class 'azure.devops.v5_1.build.models.Build'>
 
-    :param listOfDefinitions: A list of build definition objects to be added as dictionaries (name only)
-    :listOfDefinitions type: <List> of type <class 'azure.devops.v5_1.build.models.BuildDefinitionReference'>
+    :param listOfDefinitions: A dictionary of build definitions to be added as dictionaries (name only)
+    :listOfDefinitions type: <Dictionary>
 
     :return: A list of dictionaries containing data about the builds in a build definition
     :rtype: <List> of type <Dictionary>
@@ -125,14 +125,14 @@ def createBuildStructures(builds, listOfDefinitions):
     keys = []
     buildTimeList = []
     timeListKeys = []
-    if len(listOfDefinitions) > 0:
-        for definition in listOfDefinitions:
+    if listOfDefinitions['count'] > 0:
+        for definition in listOfDefinitions['value']:
             # Add all definition names to the list
             #   This will mean that even if they have no builds associated they are still represented
             #   We also set all of the possible results to 0
             # Hi future maintainer, the order of the keys here is the order that they appear in the csv file
             myList.append({
-            'definition': definition.name,
+            'definition': definition['name'],
             'succeeded': 0,
             'partiallySucceeded': 0,
             'canceled': 0,
@@ -186,7 +186,7 @@ def createBuildStructures(builds, listOfDefinitions):
         for key in buildTimeList[0]:
             timeListKeys.append(key)
 
-    if len(listOfDefinitions) > 0:
+    if listOfDefinitions['count'] > 0:
         for definition in myList:
             # Calculate average
             if not definition['total'] == 0:

@@ -88,43 +88,39 @@ class Project:
         :return: A list of builds
         :rtype: <List> of type <class 'azure.devops.v5_1.build.models.Build'>
         """
-        return self.builds("builds")
+        return self.builds()
 
 
     def getBuildDefinitions(self):
         """Get the list of build definitions from the project.
-        .. notes:: This method is a wrapper that simply calls the builds method with the mode argument set to "definitions"
 
-        :return: A list of build definitions
-        :rtype: <List> of type <class 'azure.devops.v5_1.build.models.BuildDefinitionReference'>
+        :return: A dictionary of build definitions
+        :rtype: <Dictionary>
         """
-        return self.builds("definitions")
+        rawResponse = requests.get('{}build/definitions?queryOrder=lastModifiedDescending&api-version=5.1'.format(self.base_url), auth=requests.auth.HTTPBasicAuth('', self.pat))
+        allDefinitions = json.loads(rawResponse.text)
+        while 'x-ms-continuationtoken' in rawResponse.headers:
+            rawResponse = requests.get('{}build/definitions?continuationtoken={}&queryOrder=lastModifiedDescending&api-version=5.1'.format(self.base_url, rawResponse.headers['x-ms-continuationtoken']), auth=requests.auth.HTTPBasicAuth('', self.pat))
+            response = json.loads(rawResponse.text)
+            allDefinitions['count'] += response['count']
+            allDefinitions['value'].extend(response['value'])
+        return allDefinitions
 
 
-    def builds(self, mode):
+    def builds(self):
         """Use the build client to get builds or build definitions from the ADO API.
         .. notes:: This method is intented to be used by the wrapper functions.
 
-        :param mode: The type of object to return, possible options: 'definitions' 'builds'
-        :mode type: <String>
-
-        :return: A list of either builds or build definitions
-        :rtype: <List> of type <class 'azure.devops.v5_1.build.models.BuildDefinitionReference'> OR type <class 'azure.devops.v5_1.build.models.Build'>
+        :return: A list of builds
+        :rtype: <List> of type <class 'azure.devops.v5_1.build.models.Build'>
         """
 
-        buildClient = self.connection.clients.get_build_client()
-        if mode == "definitions":
-            builds = buildClient.get_definitions(self.project.name)
-        elif mode == "builds":
-            builds = buildClient.get_builds(self.project.name)
+        builds = buildClient.get_builds(self.project.name)
         listOfBuilds = builds.value
 
         # While there is more to get, get them and extend the current list
         while builds.continuation_token is not None:
-            if mode == "definitions":
-                builds = buildClient.get_definitions(self.project.name, continuation_token=builds.continuation_token)
-            elif mode == "builds":
-                builds = buildClient.get_builds(self.project.name, continuation_token=builds.continuation_token)
+            builds = buildClient.get_builds(self.project.name, continuation_token=builds.continuation_token)
             listOfBuilds.extend(builds.value)
 
         return listOfBuilds
