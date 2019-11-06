@@ -1,6 +1,8 @@
 import AzureDevOpsWrapper
 
-import csv, os, json
+import csv, os, json, datetime
+# import pprint
+from dateutil.parser import parse
 
 def main(organisationName, projectName, pat):
     """Creates five csv files containing raw statistics about the given project.
@@ -22,7 +24,7 @@ def main(organisationName, projectName, pat):
     repositories = theProject.getRepositories()
     builds = theProject.getBuilds()
     buildDefinitions = theProject.getBuildDefinitions()
-    releases = theProject.getReleases()
+    releases = theProject.getDeployments()
     releaseDefinitions = theProject.getReleaseDefinitions()
 
     buildStructure, buildFields, buildTimeList, buildTimeListKeys = createBuildStructures(builds, buildDefinitions)
@@ -30,35 +32,35 @@ def main(organisationName, projectName, pat):
     gitStructure, gitFields, commitsInTotal = createGitStructures(repositories, theProject)
 
 
-    writeFile(projectName, ['number of builds', len(builds)], [], 'overview', 'w')
-    writeFile(projectName, ['number of build definitions', len(buildDefinitions)], [], 'overview')
-    writeFile(projectName, ['number of releases', len(releases)], [], 'overview')
-    writeFile(projectName, ['number of release definitions', len(releaseDefinitions)], [], 'overview')
-    writeFile(projectName, ['number of repositories', len(repositories)], [], 'overview')
+    writeFile(projectName, ['number of builds', builds['count']], [], 'overview', 'w')
+    writeFile(projectName, ['number of build definitions', buildDefinitions['count']], [], 'overview')
+    writeFile(projectName, ['number of releases', releases['count']], [], 'overview')
+    writeFile(projectName, ['number of release definitions', releaseDefinitions['count']], [], 'overview')
+    writeFile(projectName, ['number of repositories', repositories['count']], [], 'overview')
     writeFile(projectName, ['number of commits', commitsInTotal], [], 'overview')
 
 
     writeFile(projectName, buildStructure, buildFields, 'build', 'w')
     writeFile(projectName, [], [], 'build')
-    writeFile(projectName, ['number of build definitions', len(buildDefinitions)], [], 'build')
+    writeFile(projectName, ['number of build definitions', buildDefinitions['count']], [], 'build')
     writeFile(projectName, [], [], 'build')
-    writeFile(projectName, ['number of builds', len(builds)], [], 'build')
+    writeFile(projectName, ['number of builds', builds['count']], [], 'build')
     writeFile(projectName, [], [], 'build')
     writeFile(projectName, buildTimeList, buildTimeListKeys, 'build')
 
 
     writeFile(projectName, releaseStructure, releaseFields, 'release', 'w')
     writeFile(projectName, [], [], 'release')
-    writeFile(projectName, ['number of release definitions', len(releaseDefinitions)], [], 'release')
+    writeFile(projectName, ['number of release definitions', releaseDefinitions['count']], [], 'release')
     writeFile(projectName, [], [], 'release')
-    writeFile(projectName, ['number of releases', len(releases)], [], 'release')
+    writeFile(projectName, ['number of releases', releases['count']], [], 'release')
     writeFile(projectName, [], [], 'release')
     writeFile(projectName, releaseTimeList, releaseTimeListKeys, 'release')
 
 
     writeFile(projectName, gitStructure, gitFields, 'git', 'w')
     writeFile(projectName, [], [], 'git')
-    writeFile(projectName, ['number of repositories', len(repositories)], [], 'git')
+    writeFile(projectName, ['number of repositories', repositories['count']], [], 'git')
     writeFile(projectName, [], [], 'git')
     writeFile(projectName, ['number of commits in total', commitsInTotal], [], 'git')
 
@@ -106,8 +108,8 @@ def createBuildStructures(builds, listOfDefinitions):
     :param builds: A list of build objects to be counted in the dictionaries
     :builds type: <List> of type <class 'azure.devops.v5_1.build.models.Build'>
 
-    :param listOfDefinitions: A list of build definition objects to be added as dictionaries (name only)
-    :listOfDefinitions type: <List> of type <class 'azure.devops.v5_1.build.models.BuildDefinitionReference'>
+    :param listOfDefinitions: A dictionary of build definitions to be added as dictionaries (name only)
+    :listOfDefinitions type: <Dictionary>
 
     :return: A list of dictionaries containing data about the builds in a build definition
     :rtype: <List> of type <Dictionary>
@@ -125,14 +127,14 @@ def createBuildStructures(builds, listOfDefinitions):
     keys = []
     buildTimeList = []
     timeListKeys = []
-    if len(listOfDefinitions) > 0:
-        for definition in listOfDefinitions:
+    if listOfDefinitions['count'] > 0:
+        for definition in listOfDefinitions['value']:
             # Add all definition names to the list
             #   This will mean that even if they have no builds associated they are still represented
             #   We also set all of the possible results to 0
             # Hi future maintainer, the order of the keys here is the order that they appear in the csv file
             myList.append({
-            'definition': definition.name,
+            'definition': definition['name'],
             'succeeded': 0,
             'partiallySucceeded': 0,
             'canceled': 0,
@@ -145,37 +147,37 @@ def createBuildStructures(builds, listOfDefinitions):
         for key in myList[0]:
             keys.append(key)
 
-    if len(builds) > 0:
-        for item in builds:
+    if builds['count'] > 0:
+        for item in builds['value']:
             # If the deployment has not started then the start_time and finish_time times will not have its timezone info set, but the queue_time time will
             # This will cause a TypeError when trying to do maths with a non-timezone aware datetime and a timezone aware datetime
-            if item.start_time.tzinfo is None:
+            if parse(item['startTime']).tzinfo is None:
                 queueDuration = 0
             else:
-                queueDuration = (item.start_time - item.queue_time).total_seconds()
+                queueDuration = (parse(item['startTime']) - parse(item['queueTime'])).total_seconds()
             # See comment above
-            if item.finish_time.tzinfo is None:
+            if parse(item['finishTime']).tzinfo is None:
                 duration = 0
             else:
                 # Get the duration of the build
-                duration = (item.finish_time - item.start_time).total_seconds()
+                duration = (parse(item['finishTime']) - parse(item['startTime'])).total_seconds()
             # Add to buildTimeList
             buildTimeList.append({
-            'build id': item.id,
-            'definition': item.definition.name,
-            'result': item.result,
-            'queued at time': item.queue_time.strftime("%H:%M:%S"),
-            'queued at date': item.queue_time.strftime("%d/%m/%Y"),
+            'build id': item['id'],
+            'definition': item['definition']['name'],
+            'result': item['result'],
+            'queued at time': parse(item['queueTime']).date(),
+            'queued at date': parse(item['queueTime']).time(),
             'duration': duration,
             'queue duration': queueDuration
             })
             # This may happen if the build hasnt finished yet
-            if item.result is None:
+            if item['result'] is None:
                 continue
             for definitionDict in myList:
                 # If this is the same definition (in list to be filled and list to take things from)
-                if item.definition.name == definitionDict['definition']:
-                    definitionDict[item.result] += 1
+                if item['definition']['name'] == definitionDict['definition']:
+                    definitionDict[item['result']] += 1
                     # We always want to increment the total
                     definitionDict['total'] += 1
                     # Add duration to sum of all durations (this will be converted to an average later)
@@ -186,7 +188,7 @@ def createBuildStructures(builds, listOfDefinitions):
         for key in buildTimeList[0]:
             timeListKeys.append(key)
 
-    if len(listOfDefinitions) > 0:
+    if listOfDefinitions['count'] > 0:
         for definition in myList:
             # Calculate average
             if not definition['total'] == 0:
@@ -198,11 +200,11 @@ def createBuildStructures(builds, listOfDefinitions):
 def createReleaseStructures(releases, listOfDefinitions):
     """Creates a list of dictionaries containing data about the releases in a release definition.
 
-    :param releases: A list of release objects to be counted in the dictionaries
-    :releases type: <List> of type <class 'azure.devops.v5_1.release.models.Release'>
+    :param releases: A dictionary of releases to be counted in the dictionaries
+    :releases type: <Dictionary>
 
-    :param listOfDefinitions: A list of release definition objects to be added as dictionaries (name only)
-    :listOfDefinitions type: <List> of type <class 'azure.devops.v5_1.release.models.ReleaseDefinition'>
+    :param listOfDefinitions: A dictionary of release definitions to be added as dictionaries (name only)
+    :listOfDefinitions type: <Dictionary>
 
     :return: A list of dictionaries containing data about the releases in a release definition
     :rtype: <List> of type <Dictionary>
@@ -220,11 +222,11 @@ def createReleaseStructures(releases, listOfDefinitions):
     keys = []
     releaseTimeList = []
     timeListKeys = []
-    if len(listOfDefinitions) > 0:
-        for definition in listOfDefinitions:
+    if listOfDefinitions['count'] > 0:
+        for definition in listOfDefinitions['value']:
             # Hi future maintainer, the order of the keys here is the order that they appear in the csv file
             myList.append({
-            'definition': definition.name,
+            'definition': definition['name'],
             'succeeded': 0,
             'partiallySucceeded': 0,
             'cancelled': 0,
@@ -240,41 +242,46 @@ def createReleaseStructures(releases, listOfDefinitions):
         for key in myList[0]:
             keys.append(key)
 
-    if len(releases) > 0:
-        for item in releases:
+    if releases['count'] > 0:
+        for item in releases['value']:
             # If the deployment has not started then the started_on and completed_on times will not have its timezone info set, but the queued_on time will
             # This will cause a TypeError when trying to do maths with a non-timezone aware datetime and a timezone aware datetime
-            if item.started_on.tzinfo is None:
+            if parse(item['startedOn']).tzinfo is None:
                 queueDuration = 0
             else:
-                queueDuration = (item.started_on - item.queued_on).total_seconds()
-            # See comment above
-            if item.completed_on.tzinfo is None:
+                # Get duration of the queue
+                queueDuration = (parse(item['startedOn']) - parse(item['queuedOn'])).total_seconds()
+
+            # See above comment, also if completedOn has not been set, then we dont care if startedOn has
+            if parse(item['completedOn']).tzinfo is None:
                 duration = 0
             else:
                 # Get the duration of the deployment
-                duration = (item.completed_on - item.started_on).total_seconds()
+                duration = (parse(item['completedOn']) - parse(item['startedOn'])).total_seconds()
+
             # Add to releaseTimeList
             releaseTimeList.append({
-            'deployment id': item.id,
-            'definition': item.release_definition.name,
-            'result': item.deployment_status,
-            'queued at time': item.queued_on.strftime("%H:%M:%S"),
-            'queued at date': item.queued_on.strftime("%d/%m/%Y"),
+            'deployment id': item['id'],
+            'definition': item['releaseDefinition']['name'],
+            'result': item['deploymentStatus'],
+            'queued at date': parse(item['queuedOn']).date(),
+            'queued at time': parse(item['queuedOn']).time(),
             'duration': duration,
             'queue duration': queueDuration
             })
+
             for definitionDict in myList:
-                if item.release_definition.name == definitionDict['definition']:
-                    definitionDict[item.deployment_status] += 1
+                if item['releaseDefinition']['name'] == definitionDict['definition']:
+                    definitionDict[item['deploymentStatus']] += 1
                     definitionDict['total'] += 1
                     definitionDict['avg duration'] += duration
                     break
+
         # create list of keys
         for key in releaseTimeList[0]:
             timeListKeys.append(key)
 
-    if len(listOfDefinitions) > 0:
+    if listOfDefinitions['count'] > 0:
         for definition in myList:
             # Calculate average
             if not definition['total'] == 0:
@@ -286,8 +293,8 @@ def createReleaseStructures(releases, listOfDefinitions):
 def createGitStructures(repositories, theProject):
     """Creates a list of dictionaries containing data about the repositories.
 
-    :param repositories: A List of repository objects
-    :repositories type: <List> of type <class 'azure.devops.v5_1.git.models.GitRepository'>
+    :param repositories: A List of repositories
+    :repositories type: <List>
 
     :param theProject: The AzureDevOpsWrapper Project
     :theProject type: <class 'AzureDevOpsWrapper.Project'>
@@ -302,11 +309,11 @@ def createGitStructures(repositories, theProject):
     myList = []
     commitsInTotal = 0
     if len(repositories) > 0:
-        for repository in repositories:
+        for repository in repositories['value']:
             additions = deletions = editions = 0
             # If the repo is not totally empty
-            if repository.default_branch is not None:
-                defaultBranch = repository.default_branch[11:]
+            if 'defaultBranch' in repository:
+                defaultBranch = repository['defaultBranch'][11:]
                 repositoryCommits = theProject.getRepositoryCommits(repository)
                 defaultBranchCommits = theProject.getRepositoryCommits(repository, branch=defaultBranch)
                 for commit in repositoryCommits['value']:
@@ -320,7 +327,7 @@ def createGitStructures(repositories, theProject):
                 repositoryCommits = {'count': 0}
 
             myList.append({
-            'repository': repository.name,
+            'repository': repository['name'],
             'default branch': defaultBranch,
             'number of commits (default branch)': defaultBranchCommits['count'],
             'number of commits (all branches)': repositoryCommits['count'],
