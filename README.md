@@ -58,5 +58,5 @@ Stop:`deactivate`*
 - [x] Time per deployment (print deployment ids)
 - [x] Average time per deployment
 
-#TODO
-- [ ] Rewrite all calls to the API to use direct calls
+# TODO
+- [x] Rewrite all calls to the API to use direct calls
