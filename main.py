@@ -166,8 +166,8 @@ def createBuildStructures(builds, listOfDefinitions):
             'build id': item['id'],
             'definition': item['definition']['name'],
             'result': item['result'],
-            'queued at time': parse(item['queueTime']).date(),
-            'queued at date': parse(item['queueTime']).time(),
+            'queued at date': parse(item['queueTime']).date(),
+            'queued at time': parse(item['queueTime']).time(),
             'duration': duration,
             'queue duration': queueDuration
             })
